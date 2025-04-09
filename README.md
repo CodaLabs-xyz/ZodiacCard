@@ -102,10 +102,73 @@ zodiac-card/
 │   ├── api/               # API routes
 │   ├── components/        # React components
 │   └── pages/            # App pages
-├── contracts/            # Solidity smart contracts
+├── ZodiacCardContracts/   # Smart contract monorepo
+│   ├── packages/         
+│   │   └── hardhat/      # Hardhat development environment
+│   │       ├── contracts/     # Smart contract source files
+│   │       ├── deploy/        # Deployment scripts
+│   │       ├── test/         # Contract test files
+│   │       └── scripts/      # Utility scripts
+│   └── README.md         # Smart contract documentation
 ├── lib/                  # Utility functions
 ├── public/              # Static assets
 └── styles/              # Global styles
+```
+
+## Smart Contracts
+
+The smart contracts for Zodiac Card are organized in a monorepo structure under `ZodiacCardContracts/`. This setup allows for better organization and separation of concerns between the frontend application and blockchain components.
+
+### Contract Architecture
+
+The smart contracts are developed using Hardhat and include:
+
+- NFT contract for minting Zodiac Fortune Cards
+- Integration with IPFS for storing card metadata
+- Event emission for frontend updates
+- Secure ownership and access control mechanisms
+
+### Development Environment
+
+The contracts are set up with a robust development environment including:
+
+- Hardhat for development, testing, and deployment
+- TypeScript support for type-safe development
+- Automated testing setup
+- Deployment scripts for multiple networks
+- Environment variable configuration
+- Code quality tools (ESLint, Prettier)
+
+### Getting Started with Contracts
+
+1. Navigate to the contracts directory
+```bash
+cd ZodiacCardContracts/packages/hardhat
+```
+
+2. Install dependencies
+```bash
+yarn install
+```
+
+3. Set up environment variables
+```bash
+cp .env.example .env
+```
+
+4. Compile contracts
+```bash
+yarn compile
+```
+
+5. Run tests
+```bash
+yarn test
+```
+
+6. Deploy contracts
+```bash
+yarn deploy --network <network-name>
 ```
 
 ## Getting Started
