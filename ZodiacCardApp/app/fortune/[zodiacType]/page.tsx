@@ -10,10 +10,14 @@ import { WesternZodiacForm } from "@/components/western-zodiac-form"
 import { ChineseZodiacForm } from "@/components/chinese-zodiac-form"
 import { VedicZodiacForm } from "@/components/vedic-zodiac-form"
 import { MayanZodiacForm } from "@/components/mayan-zodiac-form"
+import { useParams } from "next/navigation"
 
-export default function FortunePage({ params }: { params: { zodiacType: string } }) {
+type ZodiacType = keyof typeof zodiacData
+
+export default function FortunePage() {
   const router = useRouter()
-  const { zodiacType } = params
+  const params = useParams()
+  const zodiacType = params.zodiacType as ZodiacType
   const zodiacInfo = zodiacData[zodiacType]
 
   if (!zodiacInfo) {
@@ -51,8 +55,8 @@ export default function FortunePage({ params }: { params: { zodiacType: string }
             src={zodiacInfo.image || "/placeholder.svg"}
             alt={zodiacInfo.name}
             fill
-            className="object-cover object-top"
             priority
+            className="object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#F5E6C8]"></div>
         </div>
