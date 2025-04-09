@@ -4,7 +4,14 @@
 
 ## Overview
 
-Zodiac Card is a Web3 application that combines astrology, NFTs, and AI to create unique fortune-telling experiences. Users can mint NFTs representing personalized fortune cards based on their zodiac sign, birth date, and current celestial alignments. Built as a Farcaster Frame-enabled Mini App and deployed on Base blockchain, it provides a seamless social and web3 experience for the Farcaster community.
+Zodiac Card is a Farcaster Frame-enabled Mini App deployed on Base blockchain, designed to revolutionize fortune-telling in the web3 space. Built natively for the Farcaster ecosystem, it leverages Frames for seamless social interactions and Base's robust L2 infrastructure for efficient, low-cost transactions. The app enables Farcaster users to engage with fortune-telling experiences directly within their social feeds, fostering a unique blend of social engagement and web3 functionality.
+
+As a decentralized application, Zodiac Card combines the power of astrology, NFTs, and AI to create personalized fortune-telling experiences. Users can mint unique NFTs that represent their personalized fortune cards, with each card dynamically generated based on three key elements:
+- Their zodiac sign and astrological profile
+- Precise birth date and time data
+- Real-time celestial alignments and astronomical positions
+
+The integration with Farcaster's social protocol allows users to share their fortune cards, participate in astrological discussions, and build a community around shared cosmic experiences. Through Base blockchain's efficient infrastructure, users enjoy fast minting processes and minimal transaction costs while maintaining the security and decentralization benefits of the Ethereum ecosystem.
 
 ## Features
 
