@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://zodiac.vercel.app",
+        "HTTP-Referer": "https://ZodiacCard.xyz",
         "X-Title": "Zodiac Fortune Teller",
       },
       body: JSON.stringify({
