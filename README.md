@@ -4,7 +4,7 @@
 
 ## Overview
 
-Zodiac Card is a Web3 application that combines astrology, NFTs, and AI to create unique fortune-telling experiences. Users can mint NFTs representing personalized fortune cards based on their zodiac sign, birth date, and current celestial alignments.
+Zodiac Card is a Web3 application that combines astrology, NFTs, and AI to create unique fortune-telling experiences. Users can mint NFTs representing personalized fortune cards based on their zodiac sign, birth date, and current celestial alignments. Built as a Farcaster Frame-enabled Mini App and deployed on Base blockchain, it provides a seamless social and web3 experience for the Farcaster community.
 
 ## Features
 
@@ -14,16 +14,20 @@ Zodiac Card is a Web3 application that combines astrology, NFTs, and AI to creat
 - 🌌 Real-time celestial alignment integration
 - 💫 Interactive card viewing experience
 - 🔄 Secondary market trading capabilities
+- 🖼️ Farcaster Frames integration for social sharing
+- 🌐 Native Base blockchain deployment
+- 📱 Optimized for Farcaster Mini App experience
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14, React, TypeScript
 - **Styling**: Tailwind CSS, Shadcn UI, Radix UI
-- **Blockchain**: Solidity, Hardhat
+- **Blockchain**: Solidity, Hardhat, Base Network
 - **Web3**: Viem v2, Wagmi v2
 - **AI/ML**: OpenAI GPT-4
 - **Authentication**: NextAuth.js, Wallet Connect
 - **Testing**: Vitest, Hardhat Test
+- **Farcaster**: Frames SDK, Neynar API
 
 ## Architecture
 
@@ -212,3 +216,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Website: [zodiaccard.xyz](https://zodiaccard.xyz)
 - Twitter: [@ZodiacCardNFT](https://twitter.com/ZodiacCardNFT)
 - Discord: [Join our community](https://discord.gg/zodiaccard)
+- Farcaster Mini App Documentation: [miniapps.farcaster.xyz](https://miniapps.farcaster.xyz/)
