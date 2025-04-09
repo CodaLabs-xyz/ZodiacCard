@@ -4,7 +4,14 @@
 
 ## Overview
 
-Zodiac Card is a Web3 application that combines astrology, NFTs, and AI to create unique fortune-telling experiences. Users can mint NFTs representing personalized fortune cards based on their zodiac sign, birth date, and current celestial alignments.
+Zodiac Card is a Farcaster Frame-enabled Mini App deployed on Base blockchain, designed to revolutionize fortune-telling in the web3 space. Built natively for the Farcaster ecosystem, it leverages Frames for seamless social interactions and Base's robust L2 infrastructure for efficient, low-cost transactions. The app enables Farcaster users to engage with fortune-telling experiences directly within their social feeds, fostering a unique blend of social engagement and web3 functionality.
+
+As a decentralized application, Zodiac Card combines the power of astrology, NFTs, and AI to create personalized fortune-telling experiences. Users can mint unique NFTs that represent their personalized fortune cards, with each card dynamically generated based on three key elements:
+- Their zodiac sign and astrological profile
+- Precise birth date and time data
+- Real-time celestial alignments and astronomical positions
+
+The integration with Farcaster's social protocol allows users to share their fortune cards, participate in astrological discussions, and build a community around shared cosmic experiences. Through Base blockchain's efficient infrastructure, users enjoy fast minting processes and minimal transaction costs while maintaining the security and decentralization benefits of the Ethereum ecosystem.
 
 ## Features
 
@@ -14,16 +21,20 @@ Zodiac Card is a Web3 application that combines astrology, NFTs, and AI to creat
 - 🌌 Real-time celestial alignment integration
 - 💫 Interactive card viewing experience
 - 🔄 Secondary market trading capabilities
+- 🖼️ Farcaster Frames integration for social sharing
+- 🌐 Native Base blockchain deployment
+- 📱 Optimized for Farcaster Mini App experience
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14, React, TypeScript
 - **Styling**: Tailwind CSS, Shadcn UI, Radix UI
-- **Blockchain**: Solidity, Hardhat
+- **Blockchain**: Solidity, Hardhat, Base Network
 - **Web3**: Viem v2, Wagmi v2
 - **AI/ML**: OpenAI GPT-4
 - **Authentication**: NextAuth.js, Wallet Connect
 - **Testing**: Vitest, Hardhat Test
+- **Farcaster**: Frames SDK, Neynar API
 
 ## Architecture
 
@@ -212,3 +223,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Website: [zodiaccard.xyz](https://zodiaccard.xyz)
 - Twitter: [@ZodiacCardNFT](https://twitter.com/ZodiacCardNFT)
 - Discord: [Join our community](https://discord.gg/zodiaccard)
+- Farcaster Mini App Documentation: [miniapps.farcaster.xyz](https://miniapps.farcaster.xyz/)
