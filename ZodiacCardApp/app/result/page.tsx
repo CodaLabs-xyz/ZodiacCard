@@ -78,7 +78,7 @@ export default function ResultPage() {
   }, [username, sign, zodiacType, signInfo.element])
 
   const handleShare = () => {
-    const text = `🔮 My ${zodiacType} zodiac fortune from Zodiac: As a ${sign}, ${fortune} Check yours at zodiac.vercel.app`
+    const text = `🔮 My ${zodiacType} zodiac fortune from Zodiac: As a ${sign}, ${fortune} Check yours at https://ZodiacCard.xyz`
     const url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
     window.open(url, "_blank")
   }
