@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -15,10 +15,12 @@ export default function ResultPage() {
   const username = searchParams.get("username") || ""
   const sign = searchParams.get("sign") || ""
   const zodiacType = searchParams.get("zodiacType") || ""
+  const isGeneratingRef = useRef(false)
 
   const [fortune, setFortune] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
+  const [hasGeneratedFortune, setHasGeneratedFortune] = useState(false)
 
   // Get zodiac info
   const zodiacInfo = zodiacData[zodiacType as keyof typeof zodiacData]
@@ -33,8 +35,12 @@ export default function ResultPage() {
         return
       }
 
+      if (isGeneratingRef.current) return
+      isGeneratingRef.current = true
+
       try {
         setIsLoading(true)
+        setHasGeneratedFortune(true)
 
         // Try to get an AI-generated fortune
         try {
@@ -76,7 +82,7 @@ export default function ResultPage() {
     }
 
     generateFortune()
-  }, [username, sign, zodiacType, signInfo.element])
+  }, [username, sign, zodiacType, signInfo.element, hasGeneratedFortune])
 
   const handleShare = () => {
     const text = `🔮 My ${zodiacType} zodiac fortune from Zodiac: As a ${sign}, ${fortune} Check yours at https://ZodiacCard.xyz`
@@ -144,7 +150,7 @@ export default function ResultPage() {
             <span className="text-amber-700">{username}</span>'s Fortune
           </CardTitle>
           <CardDescription className="text-gray-600">
-            {zodiacInfo.emoji} {zodiacInfo.name}: {signInfo.name} {signInfo.symbol}
+            {zodiacInfo.emoji} {zodiacInfo.name}: {signInfo.name} {'symbol' in signInfo ? signInfo.symbol : ''}
           </CardDescription>
         </CardHeader>
 

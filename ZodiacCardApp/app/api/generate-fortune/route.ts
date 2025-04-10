@@ -4,10 +4,17 @@ export async function POST(req: NextRequest) {
   try {
     const { username, sign, zodiacType } = await req.json()
 
+    // console.log("--------------------------------")
+    // console.log("username", username)
+    // console.log("sign", sign)
+    // console.log("zodiacType", zodiacType)
+    // console.log("--------------------------------")
+
     // Get OpenRouter API key from environment variables
     const apiKey = process.env.OPENROUTER_API_KEY
 
     if (!apiKey) {
+      // console.error("No OpenRouter API key found")
       return NextResponse.json({
         fortune: `As a ${sign}, your crypto journey looks promising! The stars align for financial growth, and your intuition will guide you to make wise investment choices. Trust your instincts this week.`,
       })
@@ -35,6 +42,9 @@ export async function POST(req: NextRequest) {
     } else if (zodiacType === "mayan") {
       systemPrompt += " You specialize in Mayan Tzolk'in calendar and its 20 day signs."
     }
+
+    // console.log("systemPrompt", systemPrompt)
+    // console.log("--------------------------------")
 
     // Call the OpenRouter API with GPT-4o-mini
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -72,6 +82,10 @@ export async function POST(req: NextRequest) {
     try {
       const data = await response.json()
       const fortune = data.choices[0].message.content.trim()
+
+      // console.log("fortune", fortune)
+      // console.log("--------------------------------")
+
       return NextResponse.json({ fortune })
     } catch (parseError) {
       console.error("Error parsing API response:", parseError)
