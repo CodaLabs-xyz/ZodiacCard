@@ -21,14 +21,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Create a prompt for the fortune generation based on zodiac type
-    let systemPrompt = "You are a mystical fortune teller specializing in crypto fortunes based on zodiac signs."
+    let systemPrompt = "You are a mystical fortune teller specializing in fortunes for crypto projects based on zodiac signs."
 
     const prompt = `Generate a positive, optimistic crypto fortune for a person with the ${zodiacType} zodiac sign of ${sign}. 
-    The fortune should be personalized for ${username}, be 2-3 sentences long, and include:
+    The fortune should be 1-2 sentences long, and include:
     1. A reference to their zodiac sign's traits
     2. A positive prediction about their crypto investments or projects
-    3. A bit of mystical/celestial language
-    4. Keep it upbeat and encouraging
+    3. Mention their potential for creating impactful blockchain solutions or contributing to web3
+    4. A bit of mystical/celestial language
+    5. Keep it upbeat and encouraging, focusing on growth and development (not market conditions)
     
     Format it as a direct message to the user without any additional text.`
 
