@@ -11,13 +11,23 @@ import { ArrowLeft, Loader2, Share2 } from "lucide-react"
 import { Header } from "@/components/header"
 
 export default function ResultPage() {
+  
+  console.log('ResultPage')
+
   const searchParams = useSearchParams()
   const username = searchParams.get("username") || ""
   const sign = searchParams.get("sign") || ""
   const zodiacType = searchParams.get("zodiacType") || ""
-  const isGeneratingRef = useRef(false)
+  
+  // Single ref to track generation state
+  const generationStateRef = useRef({
+    hasStarted: false,
+    fortuneGenerated: false,
+    imageGenerated: false
+  })
 
   const [fortune, setFortune] = useState("")
+  const [imageUrl, setImageUrl] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const [hasGeneratedFortune, setHasGeneratedFortune] = useState(false)
@@ -35,57 +45,108 @@ export default function ResultPage() {
         return
       }
 
-      if (isGeneratingRef.current) return
-      isGeneratingRef.current = true
+      if (generationStateRef.current.fortuneGenerated) return
 
       try {
-        setIsLoading(true)
-        setHasGeneratedFortune(true)
+        console.log('Generating fortune')
+        const response = await fetch("/api/generate-fortune", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            sign,
+            zodiacType,
+          }),
+        })
 
-        // Try to get an AI-generated fortune
-        try {
-          const response = await fetch("/api/generate-fortune", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username,
-              sign,
-              zodiacType,
-            }),
-          })
+        const data = await response.json()
 
-          const data = await response.json()
-
-          if (response.ok && data.fortune) {
-            setFortune(data.fortune)
-          } else {
-            // Fallback fortune
-            setFortune(
-              `As a ${sign}, your crypto journey looks promising! The stars align for financial growth, and your natural ${signInfo.element} energy will guide you to make wise investment choices. Trust your intuition this week.`,
-            )
-          }
-        } catch (apiError) {
-          console.error("API error:", apiError)
+        if (response.ok && data.fortune) {
+          setFortune(data.fortune)
+          generationStateRef.current.fortuneGenerated = true
+        } else {
           // Fallback fortune
           setFortune(
             `As a ${sign}, your crypto journey looks promising! The stars align for financial growth, and your natural ${signInfo.element} energy will guide you to make wise investment choices. Trust your intuition this week.`,
           )
+          generationStateRef.current.fortuneGenerated = true
         }
+      } catch (apiError) {
+        console.error("API error:", apiError)
+        // Fallback fortune
+        setFortune(
+          `As a ${sign}, your crypto journey looks promising! The stars align for financial growth, and your natural ${signInfo.element} energy will guide you to make wise investment choices. Trust your intuition this week.`,
+        )
+        generationStateRef.current.fortuneGenerated = true
+      }
+    }
+
+    async function generateImage() {
+      if (!username || !sign || !zodiacType) {
+        setError("Missing required information")
+        return
+      }
+
+      if (generationStateRef.current.imageGenerated) return
+
+      try {
+        console.log('Generating image')
+        const prompt = `This digital artwork blends anime and cosmic art to depict a mystical character embodying the zodiac ${zodiacType} and the sign ${sign}, intertwined with cryptocurrency themes. The character boasts flowing blue and turquoise hair, large ${sign} caracteristics adorned with starry constellations, and a glowing blockchain symbol floating beside the character, while the character holds a radiant crypto symbol that illuminates the character's robe, all set against an enchanting starry backdrop.`
+
+        const imageResponse = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        })
+
+        if (!imageResponse.ok) {
+          throw new Error('Failed to generate image')
+        }
+
+        const imageData = await imageResponse.json()
+
+        if (!imageData.imageUrl) {
+          throw new Error('No image URL returned')
+        }
+
+        setImageUrl(imageData.imageUrl)
+        generationStateRef.current.imageGenerated = true
       } catch (err) {
-        console.error(err)
-        setError("Failed to generate your fortune. Please try again.")
+        console.error("Failed to generate image:", err)
+        setError("Failed to generate your character image. Please try again.")
+      }
+    }
+
+    async function generateAll() {
+      if (generationStateRef.current.hasStarted) return
+      
+      try {
+        generationStateRef.current.hasStarted = true
+        setIsLoading(true)
+        
+        await generateFortune()
+        await generateImage()
+        
+        setHasGeneratedFortune(true)
+      } catch (err) {
+        console.error("Error in generation process:", err)
+        setError("Failed to complete the generation process. Please try again.")
       } finally {
         setIsLoading(false)
       }
     }
 
-    generateFortune()
-  }, [username, sign, zodiacType, signInfo.element, hasGeneratedFortune])
+    generateAll()
+
+    return () => {
+      // No need to reset the ref on cleanup as we want to preserve the generation state
+    }
+  }, [username, sign, zodiacType, signInfo.element])
 
   const handleShare = () => {
-    const text = `🔮 My ${zodiacType} zodiac fortune from Zodiac: As a ${sign}, ${fortune} Check yours at https://ZodiacCard.xyz`
+    const text = `My ${zodiacType} zodiac fortune from Zodiac: As a ${sign}, ${fortune} Check yours at https://ZodiacCard.xyz`
     const url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
     window.open(url, "_blank")
   }
@@ -147,7 +208,7 @@ export default function ResultPage() {
 
         <CardHeader className="text-center pt-2">
           <CardTitle className="text-2xl font-bold text-gray-800">
-            <span className="text-amber-700">{username}</span>'s Fortune
+            <span className="text-amber-700">{username}</span>'s Fortune **
           </CardTitle>
           <CardDescription className="text-gray-600">
             {zodiacInfo.emoji} {zodiacInfo.name}: {signInfo.name} {'symbol' in signInfo ? signInfo.symbol : ''}
@@ -155,6 +216,26 @@ export default function ResultPage() {
         </CardHeader>
 
         <CardContent className="text-center">
+          {imageUrl && (
+            <div className="mb-6 overflow-hidden">
+              <div className="relative w-full aspect-square max-w-[400px] mx-auto rounded-xl overflow-hidden">
+                <Image 
+                  src={imageUrl} 
+                  alt={`Generated character for ${username}'s ${zodiacType} ${sign}`}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          )}
+
+          {generationStateRef.current.hasStarted && !imageUrl && !error && (
+            <div className="mb-6 p-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center">
+              <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
+            </div>
+          )}
+
           <div className="mb-6 p-4 rounded-lg bg-amber-50 border border-amber-200">
             <p className="text-gray-800 text-lg italic">{fortune}</p>
           </div>
