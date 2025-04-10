@@ -5,26 +5,35 @@ import { uploadJsonToPinata } from "./utils/pinata";
 dotenv.config();
 
 async function main() {
-    // Get proxy address from .env
+    // Get addresses from .env
     const proxyAddress = process.env.PROXY_CONTRACT_ADDRESS;
-    if (!proxyAddress) {
-        throw new Error("PROXY_CONTRACT_ADDRESS not set in .env");
+    const usdcAddress = process.env.USDC_CONTRACT_ADDRESS;
+    
+    if (!proxyAddress || !usdcAddress) {
+        throw new Error("PROXY_CONTRACT_ADDRESS or USDC_CONTRACT_ADDRESS not set in .env");
     }
 
-    // Get contract instance
+    // Get contract instances
     const zodiacNFT = await ethers.getContractAt("ZodiacNFT", proxyAddress);
+    const usdcToken = await ethers.getContractAt("IERC20", usdcAddress);
 
     // Get the mint fee
     const mintFee = await zodiacNFT.mintFee();
-    console.log("\n💰 Current mint fee:", ethers.formatEther(mintFee), "ETH");
+    console.log("\n💰 Current mint fee:", ethers.formatUnits(mintFee, 6), "USDC");
 
     // Get signer
     const [signer] = await ethers.getSigners();
-    console.log("🔑 Minting from address:", await signer.getAddress());
+    const signerAddress = await signer.getAddress();
+    console.log("🔑 Minting from address:", signerAddress);
 
-    // Check signer's balance
-    const balance = await ethers.provider.getBalance(signer.getAddress());
-    console.log("💳 Account balance:", ethers.formatEther(balance), "ETH");
+    // Check USDC balance
+    const usdcBalance = await usdcToken.balanceOf(signerAddress);
+    console.log("💳 USDC balance:", ethers.formatUnits(usdcBalance, 6), "USDC");
+
+    // Check if we have enough USDC
+    if (usdcBalance < mintFee) {
+        throw new Error(`Insufficient USDC balance. Need ${ethers.formatUnits(mintFee, 6)} USDC but have ${ethers.formatUnits(usdcBalance, 6)} USDC`);
+    }
 
     try {
         // Get next token ID for naming
@@ -51,13 +60,19 @@ async function main() {
         const metadataURI = `https://ipfs.io/ipfs/${metadataHash}`;
         console.log("✅ Metadata uploaded! URI:", metadataURI);
 
+        // First approve USDC spending
+        console.log("\n🔓 Approving USDC spending...");
+        const approveTx = await usdcToken.approve(proxyAddress, mintFee);
+        console.log("⏳ Approval transaction hash:", approveTx.hash);
+        await approveTx.wait();
+        console.log("✅ USDC approved for spending");
+
         console.log("\n🚀 Attempting to mint NFT...");
 
         // Mint NFT with metadata
         const tx = await zodiacNFT.mint(
-            await signer.getAddress(), // mint to the same address
-            metadataURI, // metadata URI
-            { value: mintFee } // send the required mint fee
+            signerAddress, // mint to the same address
+            metadataURI // metadata URI
         );
 
         console.log("⏳ Transaction hash:", tx.hash);
@@ -95,6 +110,10 @@ async function main() {
             console.log(`   ${metadataURI}`);
             console.log("3. Alternative IPFS Gateway:");
             console.log(`   https://gateway.pinata.cloud/ipfs/${metadataHash}`);
+
+            // Check remaining USDC balance
+            const remainingBalance = await usdcToken.balanceOf(signerAddress);
+            console.log("\n💰 Remaining USDC balance:", ethers.formatUnits(remainingBalance, 6), "USDC");
         }
 
     } catch (error: any) {

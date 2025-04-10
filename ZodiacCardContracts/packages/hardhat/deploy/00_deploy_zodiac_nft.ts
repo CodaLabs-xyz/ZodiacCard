@@ -8,29 +8,31 @@ const deployZodiacNFT: DeployFunction = async function (hre: HardhatRuntimeEnvir
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  // Get owner address from environment variable
+  // Get required addresses from environment variables
   const ownerAddress = process.env.DEPLOYER_ADDRESS;
-  if (!ownerAddress) {
-    throw new Error("DEPLOYER_ADDRESS environment variable not set");
+  const treasuryAddress = process.env.TREASURY_ADDRESS;
+  const usdcAddress = process.env.USDC_CONTRACT_ADDRESS;
+
+  if (!ownerAddress || !treasuryAddress || !usdcAddress) {
+    throw new Error("Required environment variables not set (DEPLOYER_ADDRESS, TREASURY_ADDRESS, USDC_CONTRACT_ADDRESS)");
   }
+
   console.log("\n👤 Using owner address:", ownerAddress);
-  
-  // Get treasury address from environment variable or use owner address as fallback
-  const treasuryAddress = process.env.TREASURY_ADDRESS || ownerAddress;
   console.log("💰 Using treasury address:", treasuryAddress);
+  console.log("💵 Using USDC address:", usdcAddress);
 
   // Configuration for different networks
   const config = {
     name: "Zodiac NFT",
     symbol: "ZODIAC",
-    // 0.0005 ETH in wei
-    mintFee: ethers.parseEther("0.0005"),
+    // $0.5 USDC (6 decimals)
+    mintFee: ethers.parseUnits("0.5", 6),
   };
 
   console.log("\n📝 Deployment Configuration:");
   console.log("- Name:", config.name);
   console.log("- Symbol:", config.symbol);
-  console.log("- Mint Fee:", ethers.formatEther(config.mintFee), "ETH");
+  console.log("- Mint Fee:", ethers.formatUnits(config.mintFee, 6), "USDC");
 
   // Deploy implementation
   console.log("\n🚀 Deploying ZodiacNFT...");
@@ -47,6 +49,7 @@ const deployZodiacNFT: DeployFunction = async function (hre: HardhatRuntimeEnvir
             config.mintFee,
             ownerAddress, // Contract owner
             treasuryAddress, // Treasury address for fee collection
+            usdcAddress, // USDC token address
           ],
         },
       },
@@ -76,10 +79,13 @@ const deployZodiacNFT: DeployFunction = async function (hre: HardhatRuntimeEnvir
   // Get the deployed contract instance
   const zodiacNFT = await ethers.getContractAt("ZodiacNFT", zodiacNFTDeployment.address);
 
-  // Verify owner and treasury are set correctly
+  // Verify contract settings are correct
   const contractOwner = await zodiacNFT.owner();
   const contractTreasury = await zodiacNFT.treasuryAddress();
+  const contractUSDC = await zodiacNFT.usdcToken();
+  const contractMintFee = await zodiacNFT.mintFee();
 
+  // Verify all settings
   if (contractOwner.toLowerCase() !== ownerAddress.toLowerCase()) {
     throw new Error(`Owner not set correctly. Expected ${ownerAddress}, got ${contractOwner}`);
   }
@@ -88,13 +94,22 @@ const deployZodiacNFT: DeployFunction = async function (hre: HardhatRuntimeEnvir
     throw new Error(`Treasury not set correctly. Expected ${treasuryAddress}, got ${contractTreasury}`);
   }
 
+  if (contractUSDC.toLowerCase() !== usdcAddress.toLowerCase()) {
+    throw new Error(`USDC address not set correctly. Expected ${usdcAddress}, got ${contractUSDC}`);
+  }
+
+  if (contractMintFee !== config.mintFee) {
+    throw new Error(`Mint fee not set correctly. Expected ${config.mintFee}, got ${contractMintFee}`);
+  }
+
   // Log deployment info
   console.log("\n📝 ZodiacNFT Contract Info:");
   console.log("⚡️ Proxy Address:", zodiacNFTDeployment.address);
   console.log("⚡️ Implementation Address:", zodiacNFTDeployment.implementation);
   console.log("⚡️ Owner:", contractOwner);
   console.log("⚡️ Treasury:", contractTreasury);
-  console.log("⚡️ Mint Fee:", ethers.formatEther(await zodiacNFT.mintFee()), "ETH");
+  console.log("⚡️ USDC Token:", contractUSDC);
+  console.log("⚡️ Mint Fee:", ethers.formatUnits(contractMintFee, 6), "USDC");
 
   console.log("\n✅ Deployment completed successfully!");
 };

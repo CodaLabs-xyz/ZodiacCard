@@ -37,6 +37,7 @@
     "@nomicfoundation/hardhat-verify": "~2.0.10",
     "@openzeppelin/contracts": "4.9.3",
     "@openzeppelin/contracts-upgradeable": "4.9.3",
+    "@openzeppelin/hardhat-upgrades": "^3.9.0",
     "@typechain/ethers-v5": "~11.1.2",
     "@typechain/hardhat": "~9.1.0",
     "@types/eslint": "~8.56.12",

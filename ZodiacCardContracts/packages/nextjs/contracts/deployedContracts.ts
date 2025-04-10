@@ -1522,8 +1522,8 @@ const deployedContracts = {
     },
   },
   84532: {
-    ZodaNFT: {
-      address: "0xCcb680C4AD7f7b5f81426c40dCB99790aDA63926",
+    ZodiacNFT: {
+      address: "0x8EE5e2dd87638A356364aC705AFA941aF5B01055",
       abi: [
         {
           anonymous: false,
@@ -1769,6 +1769,19 @@ const deployedContracts = {
           type: "event",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "USDCContractUpdated",
+          type: "event",
+        },
+        {
           inputs: [
             {
               internalType: "address",
@@ -1851,6 +1864,11 @@ const deployedContracts = {
               name: "initialTreasury",
               type: "address",
             },
+            {
+              internalType: "address",
+              name: "_usdcAddress",
+              type: "address",
+            },
           ],
           name: "initialize",
           outputs: [],
@@ -1902,7 +1920,7 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          stateMutability: "payable",
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -2123,6 +2141,19 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "setUSDCContract",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "bytes4",
               name: "interfaceId",
               type: "bytes4",
@@ -2253,9 +2284,15 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "withdrawFees",
-          outputs: [],
-          stateMutability: "nonpayable",
+          name: "usdcToken",
+          outputs: [
+            {
+              internalType: "contract IERC20",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -2277,8 +2314,8 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    ZodaNFT_Implementation: {
-      address: "0x869892be8E583dD695498940E2aA5621666C9C7D",
+    ZodiacNFT_Implementation: {
+      address: "0xf90BD43a6b7c815d2E5ebDf6D08F8e174D3aa526",
       abi: [
         {
           inputs: [],
@@ -2511,6 +2548,19 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
+              indexed: false,
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "USDCContractUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
               indexed: true,
               internalType: "address",
               name: "implementation",
@@ -2603,6 +2653,11 @@ const deployedContracts = {
               name: "initialTreasury",
               type: "address",
             },
+            {
+              internalType: "address",
+              name: "_usdcAddress",
+              type: "address",
+            },
           ],
           name: "initialize",
           outputs: [],
@@ -2654,7 +2709,7 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          stateMutability: "payable",
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -2875,6 +2930,19 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "setUSDCContract",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "bytes4",
               name: "interfaceId",
               type: "bytes4",
@@ -3005,16 +3073,22 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "withdrawFees",
-          outputs: [],
-          stateMutability: "nonpayable",
+          name: "usdcToken",
+          outputs: [
+            {
+              internalType: "contract IERC20",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
       ],
       inheritedFunctions: {},
     },
-    ZodaNFT_Proxy: {
-      address: "0xCcb680C4AD7f7b5f81426c40dCB99790aDA63926",
+    ZodiacNFT_Proxy: {
+      address: "0x8EE5e2dd87638A356364aC705AFA941aF5B01055",
       abi: [
         {
           inputs: [
