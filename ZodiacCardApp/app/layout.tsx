@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ClientThemeProvider } from "./components/client-theme-provider"
+import { WagmiConfig } from "@/providers/wagmi-provider"
+import { SdkInitializer } from "@/components/sdk-initializer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,7 +23,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ClientThemeProvider>
-          {children}
+          <WagmiConfig>
+            <SdkInitializer />
+            {children}
+          </WagmiConfig>
         </ClientThemeProvider>
       </body>
     </html>
