@@ -11,6 +11,7 @@ import { ChineseZodiacForm } from "@/components/chinese-zodiac-form"
 import { VedicZodiacForm } from "@/components/vedic-zodiac-form"
 import { MayanZodiacForm } from "@/components/mayan-zodiac-form"
 import { useParams } from "next/navigation"
+import { Header } from "@/components/header"
 
 type ZodiacType = keyof typeof zodiacData
 
@@ -23,6 +24,7 @@ export default function FortunePage() {
   if (!zodiacInfo) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#2D1B69] bg-gradient-to-b from-[#2D1B69] to-[#1E1240]">
+        <Header />
         <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-amber-300/20">
           <CardContent className="flex flex-col items-center justify-center p-6">
             <p className="text-red-300 mb-4">Invalid zodiac type selected.</p>
@@ -40,7 +42,8 @@ export default function FortunePage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 bg-[#2D1B69] bg-gradient-to-b from-[#2D1B69] to-[#1E1240]">
-      <div className="w-full max-w-md mb-6">
+      <Header />
+      <div className="w-full max-w-md md:mb-6">
         <Link href="/">
           <Button variant="ghost" className="text-amber-200 hover:bg-amber-900/20">
             <ArrowLeft className="mr-2 h-4 w-4" />

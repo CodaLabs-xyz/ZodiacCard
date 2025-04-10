@@ -8,6 +8,7 @@ import { zodiacData } from "@/lib/zodiac-data"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Loader2, Share2 } from "lucide-react"
+import { Header } from "@/components/header"
 
 export default function ResultPage() {
   const searchParams = useSearchParams()
@@ -86,6 +87,7 @@ export default function ResultPage() {
   if (isLoading) {
     return (
       <main className="flex min-h-screen flex-col items-center p-4 bg-[#2D1B69] bg-gradient-to-b from-[#2D1B69] to-[#1E1240]">
+        <Header />
         <div className="flex flex-col items-center justify-center h-64 w-full max-w-md">
           <Loader2 className="h-12 w-12 text-amber-400 animate-spin mb-4" />
           <p className="text-amber-200 text-lg">Consulting the stars...</p>
@@ -97,6 +99,7 @@ export default function ResultPage() {
   if (error || !zodiacInfo) {
     return (
       <main className="flex min-h-screen flex-col items-center p-4 bg-[#2D1B69] bg-gradient-to-b from-[#2D1B69] to-[#1E1240]">
+        <Header />
         <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-amber-300/20">
           <CardContent className="flex flex-col items-center justify-center p-6">
             <p className="text-red-300 mb-4">{error || "Something went wrong. Please try again."}</p>
@@ -114,7 +117,8 @@ export default function ResultPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 bg-[#2D1B69] bg-gradient-to-b from-[#2D1B69] to-[#1E1240]">
-      <div className="w-full max-w-md mb-6">
+      <Header />
+      <div className="w-full max-w-md mb-2 md:mb-6">
         <Link href="/">
           <Button variant="ghost" className="text-amber-200 hover:bg-amber-900/20">
             <ArrowLeft className="mr-2 h-4 w-4" />

@@ -7,6 +7,7 @@ import { motion, AnimatePresence, type PanInfo } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Header } from "@/components/header"
 
 const zodiacSystems = [
   {
@@ -87,9 +88,10 @@ export default function Home() {
   const currentZodiac = zodiacSystems[currentIndex]
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#2D1B69] bg-gradient-to-b from-[#2D1B69] to-[#1E1240]">
+    <main className="flex min-h-screen flex-col items-center justify-center px-4 bg-[#2D1B69] bg-gradient-to-b from-[#2D1B69] to-[#1E1240]">
+      <Header />
       <div className="w-full max-w-md text-center mb-4">
-        <h1 className="text-4xl font-bold text-white mb-2">
+        <h1 className="text-3xl font-bold text-white mb-2">
           <span className="text-amber-300">Zodiac</span> Card
         </h1>
         <p className="text-amber-100">Discover your cosmic crypto destiny</p>
@@ -110,41 +112,44 @@ export default function Home() {
             dragElastic={0.2}
             onDragEnd={handleDragEnd}
           >
-            <Card className="w-full bg-[#F5E6C8] border-2 border-amber-700 rounded-xl overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative w-full flex justify-center">
-                  <Image
-                    src={currentZodiac.image || "/placeholder.svg"}
-                    alt={currentZodiac.name}
-                    width={400}
-                    height={600}
-                    className="w-auto h-[500px] mt-2 rounded-md"
-                    priority={currentIndex === 0}
-                    loading={currentIndex === 0 ? "eager" : "lazy"}
-                    sizes="(max-width: 768px) 100vw, 400px"
-                    draggable={false}
-                  />
-                </div>
-                <div className="p-6 text-center">
-                  {/*
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    {currentZodiac.emoji} {currentZodiac.name}
-                  </h2>
-                  */}
+            <div className="flex justify-center">
+              <Card className="w-[290px] md:w-full bg-[#F5E6C8] border-2 border-amber-700 rounded-xl overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="relative w-full flex justify-center">
+                    <Image
+                      src={currentZodiac.image || "/placeholder.svg"}
+                      alt={currentZodiac.name}
+                      width={400}
+                      height={600}
+                      className="w-auto h-[270px] md:h-[500px] mt-2 rounded-md"
+                      priority={currentIndex === 0}
+                      loading={currentIndex === 0 ? "eager" : "lazy"}
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      draggable={false}
+                    />
+                  </div>
+                  <div className="p-6 text-center">
+                    {/*
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                      {currentZodiac.emoji} {currentZodiac.name}
+                    </h2>
+                    */}
 
-                  <p className="text-gray-700 mb-2">{currentZodiac.description}</p>
-                  <p className="text-gray-600 text-sm">{currentZodiac.requirements}</p>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center pb-6">
-                <Button
-                  onClick={handleSelect}
-                  className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium px-8 py-6 rounded-lg shadow-md transition-transform hover:scale-105"
-                >
-                  Select {currentZodiac.name}
-                </Button>
-              </CardFooter>
-            </Card>
+                    <p className="text-gray-700 mb-2">{currentZodiac.description}</p>
+                    <p className="text-gray-600 text-sm">{currentZodiac.requirements}</p>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-center pb-6">
+                  <Button
+                    onClick={handleSelect}
+                    className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium px-8 py-6 rounded-lg shadow-md transition-transform hover:scale-105"
+                  >
+                    Select {currentZodiac.name}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+
           </motion.div>
         </AnimatePresence>
 

@@ -1,6 +1,9 @@
 "use client"
 
 import React from "react"
+import { WagmiProvider } from 'wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { config } from '@/lib/wagmi'
 
 // Create a simple context for wallet connection state
 export const WalletContext = React.createContext({
@@ -10,22 +13,17 @@ export const WalletContext = React.createContext({
   disconnect: () => {},
 })
 
+// Create a client
+const queryClient = new QueryClient()
+
 // Create a simple provider that simulates wallet connection
-export function WagmiProvider({ children }: { children: React.ReactNode }) {
-  const [isConnected, setIsConnected] = React.useState(false)
-  const [address, setAddress] = React.useState("")
-
-  const connect = () => {
-    setIsConnected(true)
-    setAddress("0x1234...5678") // Mock address
-  }
-
-  const disconnect = () => {
-    setIsConnected(false)
-    setAddress("")
-  }
-
+export function WagmiConfig({ children }: { children: React.ReactNode }) {
   return (
-    <WalletContext.Provider value={{ isConnected, address, connect, disconnect }}>{children}</WalletContext.Provider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
+
