@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title ZodiacNFT
@@ -26,16 +27,20 @@ contract ZodiacNFT is
     // Token ID counter
     uint256 private _nextTokenId;
 
-    // Minting fee in ETH
+    // Minting fee in USDC (6 decimals)
     uint256 public mintFee;
 
     // Treasury address for fee collection
     address payable public treasuryAddress;
 
+    // USDC token contract
+    IERC20 public usdcToken;
+
     // Events
     event NFTMinted(address indexed to, uint256 indexed tokenId, string uri);
     event MintFeeUpdated(uint256 newFee);
     event TreasuryAddressUpdated(address newTreasury);
+    event USDCContractUpdated(address newUSDCContract);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -47,7 +52,8 @@ contract ZodiacNFT is
         string memory symbol,
         uint256 initialMintFee,
         address initialOwner,
-        address payable initialTreasury
+        address payable initialTreasury,
+        address _usdcAddress
     ) public initializer {
         __ERC721_init(name, symbol);
         __ERC721URIStorage_init();
@@ -58,24 +64,22 @@ contract ZodiacNFT is
         mintFee = initialMintFee;
         _nextTokenId = 1;
         treasuryAddress = initialTreasury;
+        usdcToken = IERC20(_usdcAddress);
 
         // Set default royalty to 2.5%
         _setDefaultRoyalty(initialOwner, 250);
         transferOwnership(initialOwner);
     }
 
-    function mint(address to, string memory metadataURI) public payable returns (uint256) {
-        require(msg.value >= mintFee, "Insufficient payment");
+    function mint(address to, string memory metadataURI) public returns (uint256) {
         require(bytes(metadataURI).length > 0, "Metadata URI cannot be empty");
+        
+        // Transfer USDC from user to treasury
+        require(usdcToken.transferFrom(msg.sender, treasuryAddress, mintFee), "USDC transfer failed");
 
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, metadataURI);
-
-        // Auto-withdraw fees to treasury if balance exceeds 0.01 ETH
-        if (address(this).balance >= 0.01 ether) {
-            _withdrawFeesToTreasury();
-        }
 
         emit NFTMinted(to, tokenId, metadataURI);
 
@@ -94,23 +98,15 @@ contract ZodiacNFT is
         emit TreasuryAddressUpdated(newTreasury);
     }
 
+    function setUSDCContract(address newUSDCContract) external onlyOwner {
+        require(newUSDCContract != address(0), "Invalid USDC contract address");
+        usdcToken = IERC20(newUSDCContract);
+        emit USDCContractUpdated(newUSDCContract);
+    }
+
     // View functions
     function nextTokenId() public view returns (uint256) {
         return _nextTokenId;
-    }
-
-    function withdrawFees() external {
-        _withdrawFeesToTreasury();
-    }
-
-    // Internal function to handle fee withdrawal
-    function _withdrawFeesToTreasury() internal {
-        uint256 balance = address(this).balance;
-        require(balance > 0, "No fees to withdraw");
-        require(treasuryAddress != address(0), "Treasury not set");
-        
-        (bool success, ) = treasuryAddress.call{value: balance}("");
-        require(success, "Transfer failed");
     }
 
     // Required overrides
