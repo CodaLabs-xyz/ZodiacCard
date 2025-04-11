@@ -1,0 +1,18 @@
+{
+    "accountAssociation": {
+      "header": "eyJmaWQiOjY1MTMxOSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGRiNTFkNzIwNTRiODM3MjBmMThlMTIwZWY3NTIwMGIxMmQyZTkzY2MifQ",
+      "payload": "eyJkb21haW4iOiJ6b2RpYWNjYXJkLnh5eiJ9",
+      "signature": ""
+    },
+    "frame": {
+      "name": "Zodiac Card",
+      "version": "1",
+      "iconUrl": "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/zodiac_icon.ico",
+      "homeUrl": "https://zodiaccard.xyz",
+      "imageUrl": "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacCard04.png",
+      "buttonTitle": "Reveal Your Fortune",
+      "splashImageUrl": "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacCard04.png",
+      "splashBackgroundColor": "#18111f",
+      "webhookUrl": "https://zodiaccard.xyz/api/webhook"
+    }
+  }
