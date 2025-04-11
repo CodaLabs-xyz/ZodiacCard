@@ -27,6 +27,14 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  // Add allowed origins for development
+  allowedDevOrigins: [
+    'www.zodiaccards.xyz',
+    'zodiaccards.xyz',
+    'codalabs.ngrok.io',
+    'localhost',
+    '127.0.0.1'
+  ],  
 }
 
 if (userConfig) {

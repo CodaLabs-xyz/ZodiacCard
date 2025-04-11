@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Loader2, Share2 } from "lucide-react"
 import { Header } from "@/components/header"
+import { MintButton } from "@/components/mint-button"
 
 export default function ResultPage() {
   
-  console.log('ResultPage')
+  // console.log('ResultPage')
 
   const searchParams = useSearchParams()
   const username = searchParams.get("username") || ""
@@ -48,7 +49,7 @@ export default function ResultPage() {
       if (generationStateRef.current.fortuneGenerated) return
 
       try {
-        console.log('Generating fortune')
+        // console.log('Generating fortune')
         const response = await fetch("/api/generate-fortune", {
           method: "POST",
           headers: {
@@ -92,8 +93,20 @@ export default function ResultPage() {
       if (generationStateRef.current.imageGenerated) return
 
       try {
-        console.log('Generating image')
-        const prompt = `This digital artwork blends anime and cosmic art to depict a mystical character embodying the zodiac ${zodiacType} and the sign ${sign}, intertwined with cryptocurrency themes. The character boasts flowing blue and turquoise hair, large ${sign} caracteristics adorned with starry constellations, and a glowing blockchain symbol floating beside the character, while the character holds a radiant crypto symbol that illuminates the character's robe, all set against an enchanting starry backdrop.`
+        // console.log('Generating image')
+
+        //const prompt = `This digital artwork blends anime and cosmic art to depict a mystical character and a mistical animal what symbolize the  ${sign} embodying the zodiac ${zodiacType}, intertwined with base blockchain themes. The character boasts flowing blue and turquoise hair, large ${sign} caracteristics adorned with starry constellations, and a glowing base blockchain symbol floating beside the character, while the character holds a radiant base blockchain symbol that illuminates the character's robe, all set against an enchanting starry backdrop.`
+        
+
+        const prompt = `Create a stunning digital artwork in an anime and cosmic art style featuring two main subjects: a mystical character and their spirit animal companion representing ${sign} of the ${zodiacType} zodiac.
+
+The first subject is an ethereal anime character with an otherworldly presence. They have flowing hair in shades of celestial blue and turquoise, adorned with constellation patterns of ${sign}. Their elegant robes shimmer with cosmic energy and feature intricate ${zodiacType} zodiac symbols woven into the fabric. Their eyes reflect the wisdom of the stars, and they hold a glowing Base blockchain symbol that pulses with ethereal energy.
+
+The second subject is a majestic spirit animal that embodies the essence of ${sign}. This mystical creature radiates with stellar energy, its form partially composed of stardust and constellation lines. The animal's features blend traditional ${sign} symbolism with magical elements, creating a powerful guardian presence beside the character.
+
+Both figures are surrounded by a mesmerizing cosmic backdrop featuring swirling nebulae in deep purples and blues, with the Base blockchain symbol appearing as a constellation pattern among the stars. The composition creates a harmonious balance between the character, their spirit animal, and the technological elements of the blockchain, all unified by the mystical energy of ${sign}.
+
+The artwork should maintain a perfect balance between anime aesthetics, zodiac mysticism, and blockchain symbolism, creating a captivating and meaningful representation of ${sign}'s spiritual energy in the digital age.`
 
         const imageResponse = await fetch("/api/generate-image", {
           method: "POST",
@@ -236,7 +249,7 @@ export default function ResultPage() {
 
         <CardHeader className="text-center pt-2">
           <CardTitle className="text-2xl font-bold text-gray-800">
-            <span className="text-amber-700">{username}</span>'s Fortune **
+            <span className="text-amber-700">{username}</span>'s Fortune
           </CardTitle>
           <CardDescription className="text-gray-600">
             {zodiacInfo.emoji} {zodiacInfo.name}: {signInfo.name} {'symbol' in signInfo ? signInfo.symbol : ''}
@@ -271,17 +284,22 @@ export default function ResultPage() {
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-3">
-          <Button onClick={handleShare} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium">
+
+          <MintButton username={username} zodiacSign={sign} fortune={fortune} zodiacType={zodiacType} imageUrl={imageUrl || ""} />
+
+          {/* <Button onClick={handleShare} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium">
             <Share2 className="mr-2 h-4 w-4" />
             Share on Warpcast
           </Button>
+          */}
 
           <Link href={`/fortune/${zodiacType}`} className="w-full">
-            <Button variant="outline" className="w-full border-amber-300 text-amber-800 hover:bg-amber-100">
+            <Button variant="outline" className="w-full border-amber-300 text-amber-500">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Try Another
             </Button>
-          </Link>
+          </Link> 
+
         </CardFooter>
       </Card>
     </main>
