@@ -91,6 +91,11 @@ async function uploadToIPFS(content: string | Blob, isMetadata: boolean = false)
   return response.json()
 }
 
+// Add this helper function after the contract addresses declarations
+function formatUSDC(amount: bigint): string {
+  return `${formatUnits(amount, 6)} USDC`
+}
+
 export function MintButton({ 
   imageUrl, 
   zodiacSign, 
@@ -234,22 +239,24 @@ export function MintButton({
   const handleShareWarpcast = async () => {
     if (!tokenId) return
     
-    console.log(zodiacSign)
-    console.log(tokenId)
-    console.log(imageUrl)
-    console.log(zodiacType)
-    console.log(username)
-    console.log(fortune)
-    console.log(imageIpfsUrl)
-    console.log("--------------------------------")
+    // console.log(zodiacSign)
+    // console.log(tokenId)
+    // console.log(imageUrl)
+    // console.log(zodiacType)
+    // console.log(username)
+    // console.log(fortune)
+    // console.log(imageIpfsUrl)
+    // console.log("--------------------------------")
 
     const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨\n\n${fortune}\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}`
     const url = `${OPENSEA_URL}/${tokenId}`
     
     let warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
 
-    if(imageUrl) {
-      warpcastUrl +=  `&embeds[]=${encodeURIComponent(imageUrl)}`
+    if(imageIpfsUrl) {
+      //warpcastUrl +=  `&embeds[]=${encodeURIComponent(imageIpfsUrl)}`
+      const gatewayUrl = `https://ipfs.io/ipfs/${imageIpfsUrl.replace('ipfs://', '')}`
+      warpcastUrl += `&embeds[]=${encodeURIComponent(gatewayUrl)}`
     }
     window.open(warpcastUrl, '_blank')
   }
@@ -285,13 +292,19 @@ export function MintButton({
         ) : (
           <>
             <Sparkles className="mr-2 h-4 w-4" />
-            Mint NFT
+            Mint NFT • {formatUSDC(MINT_FEE)}
           </>
         )}
       </Button>
 
       {error && (
         <p className="mt-2 text-sm text-red-500">{error}</p>
+      )}
+
+      {!address && (
+        <p className="mt-2 text-sm text-muted-foreground text-center">
+          Mint cost: {formatUSDC(MINT_FEE)}
+        </p>
       )}
 
       {isMinted && tokenId && (
