@@ -108,17 +108,30 @@ Both figures are surrounded by a mesmerizing cosmic backdrop featuring swirling 
 
 The artwork should maintain a perfect balance between anime aesthetics, zodiac mysticism, and blockchain symbolism, creating a captivating and meaningful representation of ${sign}'s spiritual energy in the digital age.`
 
+        console.log('🎨 Initiating image generation request with prompt length:', prompt.length)
+        console.log('📄 Prompt:', prompt)
+        
         const imageResponse = await fetch("/api/generate-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt }),
         })
 
+        console.log('📡 Image generation response status:', imageResponse.status)
+        console.log('📡 Response headers:', Object.fromEntries(imageResponse.headers.entries()))
+
         if (!imageResponse.ok) {
-          throw new Error('Failed to generate image')
+          const errorText = await imageResponse.text()
+          console.error('❌ Image generation failed:', {
+            status: imageResponse.status,
+            statusText: imageResponse.statusText,
+            responseBody: errorText
+          })
+          throw new Error(`Failed to generate image: ${imageResponse.status} ${imageResponse.statusText}`)
         }
 
         const imageData = await imageResponse.json()
+        console.log('✅ Image generation successful, URL received:', imageData.imageUrl ? 'Yes' : 'No')
 
         if (!imageData.imageUrl) {
           throw new Error('No image URL returned')
