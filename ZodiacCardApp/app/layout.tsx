@@ -11,16 +11,16 @@ const inter = Inter({ subsets: ["latin"] })
 
 const frameMetadata = {
   version: "next",
-  imageUrl: process.env.NEXT_PUBLIC_IMAGE_URL,
+  imageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacCardBanner02.png",
   aspectRatio: "3:2",
   button: {
     title: "Zodiac Cards",
     action: {
       type: "launch_frame",
       name: "Zodiac Card",
-      url: process.env.NEXT_PUBLIC_SITE_URL,
-      splashImageUrl: process.env.NEXT_PUBLIC_SPLASH_IMAGE_URL,
-      splashBackgroundColor: "#47218f"
+      url: "https://zodiaccard.xyz",
+      splashImageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacCard04.png",
+      splashBackgroundColor: "#18111f"
     }
   }
 }
