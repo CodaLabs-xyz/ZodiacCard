@@ -111,7 +111,35 @@ export default function ResultPage() {
           throw new Error('No image URL returned')
         }
 
-        setImageUrl(imageData.imageUrl)
+        // Upload the generated image to S3
+        try {
+          const uploadResponse = await fetch("/api/upload-to-s3", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              imageUrl: imageData.imageUrl,
+              username,
+              sign,
+              zodiacType,
+            }),
+          })
+
+          if (uploadResponse.ok) {
+            const { s3Url } = await uploadResponse.json()
+            if (s3Url) {
+              setImageUrl(s3Url)
+            } else {
+              setImageUrl(imageData.imageUrl) // Fallback to original URL
+            }
+          } else {
+            console.warn('Failed to upload to S3, using original URL')
+            setImageUrl(imageData.imageUrl) // Fallback to original URL
+          }
+        } catch (uploadError) {
+          console.error('Error uploading to S3:', uploadError)
+          setImageUrl(imageData.imageUrl) // Fallback to original URL
+        }
+
         generationStateRef.current.imageGenerated = true
       } catch (err) {
         console.error("Failed to generate image:", err)
