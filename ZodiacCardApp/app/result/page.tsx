@@ -282,7 +282,7 @@ export default function ResultPage() {
           */}
 
           <Link href={`/fortune/${zodiacType}`} className="w-full">
-            <Button variant="outline" className="w-full border-amber-300 text-amber-500 hover:bg-amber-100">
+            <Button variant="outline" className="w-full border-amber-300 text-amber-500">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Try Another
             </Button>

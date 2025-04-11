@@ -255,7 +255,7 @@ export function MintButton({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <Button
         onClick={handleMint}
         disabled={isMinting || isApproving || !address || isMinted}
@@ -328,7 +328,7 @@ export function MintButton({
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[400px]">
           <DialogHeader>
             <DialogTitle>NFT Minted Successfully!</DialogTitle>
             <DialogDescription>
