@@ -69,6 +69,7 @@ const usdcAbi = [
 interface MintButtonProps {
   imageUrl: string
   zodiacSign: string
+  zodiacType: string
   fortune: string
   username: string
   onSuccess?: (tokenId: string) => void
@@ -93,6 +94,7 @@ async function uploadToIPFS(content: string | Blob, isMetadata: boolean = false)
 export function MintButton({ 
   imageUrl, 
   zodiacSign, 
+  zodiacType,
   fortune, 
   username, 
   onSuccess 
@@ -106,6 +108,8 @@ export function MintButton({
   const [error, setError] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [tokenId, setTokenId] = useState<string | null>(null)
+  const [isMinted, setIsMinted] = useState(false)
+  const [imageIpfsUrl, setImageIpfsUrl] = useState<string | null>(null)
 
   // Check USDC allowance
   const { data: usdcAllowance } = useContractRead({
@@ -157,17 +161,18 @@ export function MintButton({
       }
 
       // Upload image to IPFS
-      const { ipfsUrl: imageIpfsUrl } = await uploadToIPFS(imageUrl)
-      if (!imageIpfsUrl) throw new Error('Failed to upload image to IPFS')
+      const { ipfsUrl: imageIpfsUrlUploaded } = await uploadToIPFS(imageUrl)
+      if (!imageIpfsUrlUploaded) throw new Error('Failed to upload image to IPFS')
+      setImageIpfsUrl(imageIpfsUrlUploaded)
 
       // Create metadata
       const metadata = {
         name: `Zodiac Card Fortune #${Date.now()}`,
         description: `A unique Zodiac fortune for ${username}. ${fortune}`,
-        image: imageIpfsUrl,
+        image: imageIpfsUrlUploaded,
         external_url: process.env.NEXT_PUBLIC_SITE_URL,
         attributes: [
-          { trait_type: "Zodiac Card", value: "western" },
+          { trait_type: "Zodiac Card", value: zodiacType },
           { trait_type: "Zodiac Sign", value: zodiacSign },
           { trait_type: "Username", value: username },
           { trait_type: "Collection", value: "Zodiac Card" }
@@ -211,6 +216,7 @@ export function MintButton({
         
         const newTokenId = args.tokenId.toString()
         setTokenId(newTokenId)
+        setIsMinted(true)
         onSuccess?.(newTokenId)
       }
 
@@ -225,12 +231,36 @@ export function MintButton({
     }
   }
 
+  const handleShareWarpcast = async () => {
+    if (!tokenId) return
+    
+    console.log(zodiacSign)
+    console.log(tokenId)
+    console.log(imageUrl)
+    console.log(zodiacType)
+    console.log(username)
+    console.log(fortune)
+    console.log(imageIpfsUrl)
+    console.log("--------------------------------")
+
+    const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨\n\n${fortune}\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}`
+    const url = `${OPENSEA_URL}/${tokenId}`
+    
+    let warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
+
+    if(imageUrl) {
+      warpcastUrl +=  `&embeds[]=${encodeURIComponent(imageUrl)}`
+    }
+    window.open(warpcastUrl, '_blank')
+  }
+
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <Button
         onClick={handleMint}
-        disabled={isMinting || isApproving || !address}
+        disabled={isMinting || isApproving || !address || isMinted}
         className="w-full"
+        variant={isMinted ? "secondary" : "default"}
       >
         {isApproving ? (
           <>
@@ -247,10 +277,15 @@ export function MintButton({
             <Wallet className="mr-2 h-4 w-4" />
             Connect Wallet
           </>
+        ) : isMinted ? (
+          <>
+            <Sparkles className="mr-2 h-4 w-4" />
+            NFT Minted
+          </>
         ) : (
           <>
             <Sparkles className="mr-2 h-4 w-4" />
-            Process NFT
+            Mint NFT
           </>
         )}
       </Button>
@@ -259,12 +294,45 @@ export function MintButton({
         <p className="mt-2 text-sm text-red-500">{error}</p>
       )}
 
+      {isMinted && tokenId && (
+        <div className="flex gap-2">
+          <Button
+            onClick={() => window.open(`${OPENSEA_URL}/${tokenId}`, '_blank')}
+            variant="outline"
+            className="flex-1"
+          >
+            <Image
+              src="/opensea.png"
+              alt="OpenSea"
+              width={20}
+              height={20}
+              className="mr-2"
+            />
+            View on OpenSea
+          </Button>
+          <Button
+            onClick={handleShareWarpcast}
+            variant="outline"
+            className="flex-1"
+          >
+            <Image
+              src="/farcaster.png"
+              alt="Warpcast"
+              width={20}
+              height={20}
+              className="mr-2"
+            />
+            Share on Warpcast
+          </Button>
+        </div>
+      )}
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>NFT Minted Successfully!</DialogTitle>
             <DialogDescription>
-              Your Zodiac Card NFT has been minted. You can view it on OpenSea.
+              Your Zodiac Card NFT has been minted. You can view it on OpenSea or share it on Warpcast.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center">
@@ -279,14 +347,34 @@ export function MintButton({
           <DialogFooter className="flex gap-2">
             <Button
               onClick={() => window.open(`${OPENSEA_URL}/${tokenId}`, '_blank')}
+              variant="outline"
             >
-              <Share2 className="mr-2 h-4 w-4" />
+              <Image
+                src="/opensea.png"
+                alt="OpenSea"
+                width={20}
+                height={20}
+                className="mr-2"
+              />
               View on OpenSea
+            </Button>
+            <Button
+              onClick={handleShareWarpcast}
+              variant="outline"
+            >
+              <Image
+                src="/farcaster.png"
+                alt="Warpcast"
+                width={20}
+                height={20}
+                className="mr-2"
+              />
+              Share on Warpcast
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   )
 }
 

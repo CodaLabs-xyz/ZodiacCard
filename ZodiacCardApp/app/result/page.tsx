@@ -273,19 +273,20 @@ export default function ResultPage() {
 
         <CardFooter className="flex flex-col space-y-3">
 
-          <MintButton username={username} sign={sign} fortune={fortune} zodiacType={zodiacType} imageUrl={imageUrl || ""} />
+          <MintButton username={username} zodiacSign={sign} fortune={fortune} zodiacType={zodiacType} imageUrl={imageUrl || ""} />
 
           {/* <Button onClick={handleShare} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium">
             <Share2 className="mr-2 h-4 w-4" />
             Share on Warpcast
           </Button>
+          */}
 
           <Link href={`/fortune/${zodiacType}`} className="w-full">
-            <Button variant="outline" className="w-full border-amber-300 text-amber-800 hover:bg-amber-100">
+            <Button variant="outline" className="w-full border-amber-300 text-amber-500 hover:bg-amber-100">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Try Another
             </Button>
-          </Link> */}
+          </Link> 
 
         </CardFooter>
       </Card>
