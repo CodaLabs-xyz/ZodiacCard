@@ -1523,7 +1523,7 @@ const deployedContracts = {
   },
   84532: {
     ZodiacNFT: {
-      address: "0x8EE5e2dd87638A356364aC705AFA941aF5B01055",
+      address: "0x1D7ACeB0F1Cb10374c944746bAb178971bA1F523",
       abi: [
         {
           anonymous: false,
@@ -2315,7 +2315,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     ZodiacNFT_Implementation: {
-      address: "0xf90BD43a6b7c815d2E5ebDf6D08F8e174D3aa526",
+      address: "0x5478b5615Cd2EC6D9cDB1811f0c3C3Eb3e0FFb58",
       abi: [
         {
           inputs: [],
@@ -3088,7 +3088,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     ZodiacNFT_Proxy: {
-      address: "0x8EE5e2dd87638A356364aC705AFA941aF5B01055",
+      address: "0x1D7ACeB0F1Cb10374c944746bAb178971bA1F523",
       abi: [
         {
           inputs: [

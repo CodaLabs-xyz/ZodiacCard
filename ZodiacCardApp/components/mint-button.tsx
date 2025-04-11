@@ -27,7 +27,7 @@ const NETWORK_NAME = TARGET_CHAIN_ID === 8453 ? "Base" : "Base Sepolia"
 // Get contract addresses from environment variables
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_PROXY_CONTRACT_ADDRESS as `0x${string}`
 const USDC_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_USDC_CONTRACT_ADDRESS as `0x${string}`
-const MINT_FEE = parseUnits(process.env.NEXT_PUBLIC_USDC_MINT_PRICE || "0.5", 6) // USDC with 6 decimals
+const MINT_FEE = parseUnits(process.env.NEXT_PUBLIC_USDC_MINT_PRICE || "2.99", 6) // USDC with 6 decimals
 
 // Configure OpenSea URL based on network
 const OPENSEA_URL = TARGET_CHAIN_ID === 8453 
@@ -150,18 +150,26 @@ export function MintButton({
       // Check USDC allowance
       const currentAllowance = usdcAllowance ?? BigInt("0")
       if (currentAllowance < MINT_FEE) {
-        console.log('Approving USDC spending:', formatUnits(MINT_FEE, 6), 'USDC')
+        // console.log('Approving USDC spending:', formatUSDC(MINT_FEE))
         setIsApproving(true)
 
-        const approvalHash = await writeContract({
-          address: USDC_CONTRACT_ADDRESS,
-          abi: usdcAbi,
-          functionName: 'approve',
-          args: [CONTRACT_ADDRESS, MINT_FEE],
-        })
+        try {
+          const approvalHash = await writeContract({
+            address: USDC_CONTRACT_ADDRESS,
+            abi: usdcAbi,
+            functionName: 'approve',
+            args: [CONTRACT_ADDRESS, MINT_FEE],
+          })
 
-        // Wait for approval transaction
-        await publicClient.waitForTransactionReceipt({ hash: approvalHash })
+          // Wait for approval transaction
+          await publicClient.waitForTransactionReceipt({ hash: approvalHash })
+        } catch (error) {
+          console.error('USDC approval error:', error)
+          setError('Failed to approve USDC spending')
+          setIsApproving(false)
+          setIsMinting(false)
+          return
+        }
         setIsApproving(false)
       }
 
@@ -188,8 +196,8 @@ export function MintButton({
       const { ipfsUrl: metadataIpfsUrl } = await uploadToIPFS(JSON.stringify(metadata), true)
       if (!metadataIpfsUrl) throw new Error('Failed to upload metadata to IPFS')
 
-      // Mint NFT
-      console.log('Minting NFT with metadata:', metadataIpfsUrl)
+      // Mint NFT - the contract will handle the USDC transfer
+      // console.log('Minting NFT with metadata:', metadataIpfsUrl)
       const mintHash = await writeContract({
         address: CONTRACT_ADDRESS,
         abi: zodiacNftAbi,

@@ -13,7 +13,7 @@ import { MintButton } from "@/components/mint-button"
 
 export default function ResultPage() {
   
-  console.log('ResultPage')
+  // console.log('ResultPage')
 
   const searchParams = useSearchParams()
   const username = searchParams.get("username") || ""
@@ -49,7 +49,7 @@ export default function ResultPage() {
       if (generationStateRef.current.fortuneGenerated) return
 
       try {
-        console.log('Generating fortune')
+        // console.log('Generating fortune')
         const response = await fetch("/api/generate-fortune", {
           method: "POST",
           headers: {
@@ -93,7 +93,7 @@ export default function ResultPage() {
       if (generationStateRef.current.imageGenerated) return
 
       try {
-        console.log('Generating image')
+        // console.log('Generating image')
 
         //const prompt = `This digital artwork blends anime and cosmic art to depict a mystical character and a mistical animal what symbolize the  ${sign} embodying the zodiac ${zodiacType}, intertwined with base blockchain themes. The character boasts flowing blue and turquoise hair, large ${sign} caracteristics adorned with starry constellations, and a glowing base blockchain symbol floating beside the character, while the character holds a radiant base blockchain symbol that illuminates the character's robe, all set against an enchanting starry backdrop.`
         
