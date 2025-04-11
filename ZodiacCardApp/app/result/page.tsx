@@ -111,7 +111,7 @@ The artwork should maintain a perfect balance between anime aesthetics, zodiac m
         console.log('🎨 Initiating image generation request with prompt length:', prompt.length)
         console.log('📄 Prompt:', prompt)
         
-        const imageResponse = await fetch("/api/generate-image", {
+        const imageResponse = await fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt }),
