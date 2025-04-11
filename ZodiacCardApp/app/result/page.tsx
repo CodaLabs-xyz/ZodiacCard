@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Loader2, Share2 } from "lucide-react"
 import { Header } from "@/components/header"
+import { MintButton } from "@/components/mint-button"
 
 export default function ResultPage() {
   
@@ -236,7 +237,7 @@ export default function ResultPage() {
 
         <CardHeader className="text-center pt-2">
           <CardTitle className="text-2xl font-bold text-gray-800">
-            <span className="text-amber-700">{username}</span>'s Fortune **
+            <span className="text-amber-700">{username}</span>'s Fortune
           </CardTitle>
           <CardDescription className="text-gray-600">
             {zodiacInfo.emoji} {zodiacInfo.name}: {signInfo.name} {'symbol' in signInfo ? signInfo.symbol : ''}
@@ -271,7 +272,10 @@ export default function ResultPage() {
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-3">
-          <Button onClick={handleShare} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium">
+
+          <MintButton username={username} sign={sign} fortune={fortune} zodiacType={zodiacType} imageUrl={imageUrl || ""} />
+
+          {/* <Button onClick={handleShare} className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-medium">
             <Share2 className="mr-2 h-4 w-4" />
             Share on Warpcast
           </Button>
@@ -281,7 +285,8 @@ export default function ResultPage() {
               <ArrowLeft className="mr-2 h-4 w-4" />
               Try Another
             </Button>
-          </Link>
+          </Link> */}
+
         </CardFooter>
       </Card>
     </main>
