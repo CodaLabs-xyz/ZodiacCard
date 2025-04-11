@@ -179,10 +179,11 @@ export function MintButton({
       setImageIpfsUrl(imageIpfsUrlUploaded)
 
       // Create metadata
+
       const metadata = {
         name: `Zodiac Card Fortune #${Date.now()}`,
         description: `A unique Zodiac fortune for ${username}. ${fortune}`,
-        image: imageIpfsUrlUploaded,
+        image: `https://ipfs.io/ipfs/${imageIpfsUrlUploaded.replace('ipfs://', '')}`,
         external_url: process.env.NEXT_PUBLIC_SITE_URL,
         attributes: [
           { trait_type: "Zodiac Card", value: zodiacType },
