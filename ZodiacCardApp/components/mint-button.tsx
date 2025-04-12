@@ -255,7 +255,7 @@ export function MintButton({
     // console.log(imageIpfsUrl)
     // console.log("--------------------------------")
 
-    const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨\n\n${fortune}\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}`
+    const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨:\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}\n${fortune}\n\nCheck yours at www.ZodiacCard.xyz`
     const url = `${OPENSEA_URL}/${tokenId}`
     
     let warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
