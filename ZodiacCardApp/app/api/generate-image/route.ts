@@ -1,10 +1,6 @@
 // app/api/generate-image/route.ts
 import { NextResponse } from 'next/server'
-import OpenAI from 'openai'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Set in .env.local
-})
+import { generateImage } from '@/services/image-generation'
 
 export async function POST(req: Request) {
   const requestId = Math.random().toString(36).substring(7)
@@ -21,20 +17,14 @@ export async function POST(req: Request) {
     console.log(`[${requestId}] ✅ Request parsed. Prompt length: ${prompt?.length ?? 0}`)
     console.log(`[${requestId}] 📄 Prompt content: "${prompt}"`)
 
-    console.log(`[${requestId}] 🎨 Starting OpenAI image generation...`)
+    console.log(`[${requestId}] 🎨 Starting image generation...`)
     const startTime = Date.now()
     
-    const response = await openai.images.generate({
-      model: 'dall-e-3', // or 'dall-e-2'
-      prompt,
-      n: 1,
-      size: "1024x1024", // 👈 Smaller image size
-    })
+    const { imageUrl } = await generateImage({ prompt })
     
     const duration = Date.now() - startTime
-    console.log(`[${requestId}] ✅ OpenAI request completed in ${duration}ms`)
+    console.log(`[${requestId}] ✅ Image generation completed in ${duration}ms`)
 
-    const imageUrl = response.data[0].url
     console.log(`[${requestId}] 🎉 Success - Image URL generated`)
     
     return NextResponse.json({ imageUrl })
@@ -50,15 +40,6 @@ export async function POST(req: Request) {
       status: error?.status,
       prompt: prompt // Log the prompt in case of error too
     })
-    
-    // Check for specific OpenAI error types
-    if (error instanceof OpenAI.APIError) {
-      console.error(`[${requestId}] OpenAI API Error:`, {
-        status: error.status,
-        headers: error.headers,
-        error: error.error
-      })
-    }
     
     return NextResponse.json(
       { error: 'Image generation failed', details: errorMessage },

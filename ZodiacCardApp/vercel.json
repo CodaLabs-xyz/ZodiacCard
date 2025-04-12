@@ -1,6 +1,6 @@
 {
     "functions": {
-      "pages/api/generate.ts": {
+      "pages/api/vercel/**/*.ts": {
         "maxDuration": 30
       }
     }
