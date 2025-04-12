@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/dialog"
 import { Loader2, Sparkles, Wallet, Share2 } from "lucide-react"
 import Image from "next/image"
-import { sdk } from "@farcaster/frame-sdk"
-import { useNFTMint, createNFTMetadata } from "@/services/nft"
 import { parseUnits, formatUnits, decodeEventLog, type Log } from "viem"
 import { zodiacNftAbi } from "@/lib/abis"
 import { type BaseError, ContractFunctionExecutionError } from 'viem'
