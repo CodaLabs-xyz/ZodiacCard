@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 const frameMetadata = {
   version: "next",
-  imageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacEmbedImage.png",
+  imageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacEmbedImage2.png",
   aspectRatio: "3:2",
   button: {
     title: "Zodiac Cards",
