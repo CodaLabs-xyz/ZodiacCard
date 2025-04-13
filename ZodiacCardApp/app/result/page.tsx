@@ -139,7 +139,7 @@ The artwork should maintain a perfect balance between anime aesthetics, zodiac m
 
         // Upload the generated image to S3
         try {
-          const uploadResponse = await fetch("/api/upload-to-s3", {
+          const uploadResponse = await fetch(process.env.NEXT_PUBLIC_S3_UPLOAD_URL || "", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
