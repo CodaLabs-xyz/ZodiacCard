@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 const frameMetadata = {
   version: "next",
-  imageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacCardBanner02.png",
+  imageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacEmbedImage.png",
   aspectRatio: "3:2",
   button: {
     title: "Zodiac Cards",
@@ -19,7 +19,7 @@ const frameMetadata = {
       type: "launch_frame",
       name: "Zodiac Card",
       url: "https://zodiaccard.xyz",
-      splashImageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacCard04.png",
+      splashImageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacSplash.png",
       splashBackgroundColor: "#18111f"
     }
   }
