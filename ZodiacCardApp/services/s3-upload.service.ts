@@ -24,6 +24,15 @@ const s3Client = new S3Client({
   },
 })
 
+// Utility function to sanitize filename components
+function sanitizeFilenamePart(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-') // Replace spaces and special chars with hyphens
+    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+}
+
 export async function uploadImageToS3({
   imageUrl,
   username,
@@ -48,10 +57,16 @@ export async function uploadImageToS3({
     if (!response.ok) throw new Error('Failed to fetch image')
     const imageBuffer = await response.arrayBuffer()
 
-    // Generate a unique filename
+    // Generate a unique filename with sanitized components
     const timestamp = Date.now()
-    const filename = `${username}-${zodiacType}-${sign}-${timestamp}.png`
-    const key = `${bucketDirectory}/${filename}`
+    const sanitizedFilename = [
+      sanitizeFilenamePart(username),
+      sanitizeFilenamePart(zodiacType),
+      sanitizeFilenamePart(sign),
+      timestamp
+    ].join('-') + '.png'
+    
+    const key = `${bucketDirectory}/${sanitizedFilename}`
 
     // Upload to S3
     const uploadCommand = new PutObjectCommand({
