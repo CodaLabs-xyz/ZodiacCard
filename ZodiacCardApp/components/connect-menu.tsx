@@ -120,24 +120,6 @@ export function ConnectMenu() {
                 {isSwitchPending ? 'Switching...' : `Switch to ${NETWORK_NAME}`}
               </DropdownMenuItem>
             )}
-            {/* // add the network name */}
-            <DropdownMenuItem
-              className="text-violet-600 focus:text-violet-700 cursor-pointer"
-              onClick={() => {
-                navigator.clipboard.writeText(NETWORK_NAME)
-              }}
-            >
-              {NETWORK_NAME}
-            </DropdownMenuItem>
-            {/* // show the network name from the user wallet */}
-            <DropdownMenuItem
-              className="text-violet-600 focus:text-violet-700 cursor-pointer"
-              onClick={() => {
-                navigator.clipboard.writeText(chainId.toString())
-              }}
-            >
-              {chainId}
-            </DropdownMenuItem>
             <DropdownMenuItem
               className="text-red-500 focus:text-red-500 cursor-pointer"
               onClick={() => disconnect()}

@@ -6,8 +6,8 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   8453: {
-    ZodaNFT: {
-      address: "0x1cb538dbC1aFa2433543eb5BC9099A4Ab5e5419f",
+    ZodiacNFT: {
+      address: "0x71F6Fcd3326C22a896d1d725be5B9E2060001936",
       abi: [
         {
           anonymous: false,
@@ -117,19 +117,6 @@ const deployedContracts = {
           inputs: [
             {
               indexed: false,
-              internalType: "string",
-              name: "newBaseURI",
-              type: "string",
-            },
-          ],
-          name: "BaseURIUpdated",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
               internalType: "uint256",
               name: "_fromTokenId",
               type: "uint256",
@@ -253,6 +240,32 @@ const deployedContracts = {
           type: "event",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "address",
+              name: "newTreasury",
+              type: "address",
+            },
+          ],
+          name: "TreasuryAddressUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "USDCContractUpdated",
+          type: "event",
+        },
+        {
           inputs: [
             {
               internalType: "address",
@@ -321,11 +334,6 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "string",
-              name: "baseURI",
-              type: "string",
-            },
-            {
               internalType: "uint256",
               name: "initialMintFee",
               type: "uint256",
@@ -333,6 +341,16 @@ const deployedContracts = {
             {
               internalType: "address",
               name: "initialOwner",
+              type: "address",
+            },
+            {
+              internalType: "address payable",
+              name: "initialTreasury",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "_usdcAddress",
               type: "address",
             },
           ],
@@ -386,7 +404,7 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          stateMutability: "payable",
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -410,6 +428,19 @@ const deployedContracts = {
               internalType: "string",
               name: "",
               type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "nextTokenId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -568,12 +599,12 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "newBaseURI",
-              type: "string",
+              internalType: "uint256",
+              name: "newFee",
+              type: "uint256",
             },
           ],
-          name: "setBaseURI",
+          name: "setMintFee",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -581,12 +612,25 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "newFee",
-              type: "uint256",
+              internalType: "address payable",
+              name: "newTreasury",
+              type: "address",
             },
           ],
-          name: "setMintFee",
+          name: "setTreasuryAddress",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "setUSDCContract",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -679,6 +723,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "treasuryAddress",
+          outputs: [
+            {
+              internalType: "address payable",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "address",
@@ -711,9 +768,15 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "withdrawFees",
-          outputs: [],
-          stateMutability: "nonpayable",
+          name: "usdcToken",
+          outputs: [
+            {
+              internalType: "contract IERC20",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -735,8 +798,8 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    ZodaNFT_Implementation: {
-      address: "0xcb8cf140FC0a41517a28811fb0dCc2E7c4f9Cc3B",
+    ZodiacNFT_Implementation: {
+      address: "0x11A13c5E75f29CE60638099A694Fa4Bc0720a1ce",
       abi: [
         {
           inputs: [],
@@ -810,19 +873,6 @@ const deployedContracts = {
             },
           ],
           name: "ApprovalForAll",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "string",
-              name: "newBaseURI",
-              type: "string",
-            },
-          ],
-          name: "BaseURIUpdated",
           type: "event",
         },
         {
@@ -969,6 +1019,32 @@ const deployedContracts = {
           anonymous: false,
           inputs: [
             {
+              indexed: false,
+              internalType: "address",
+              name: "newTreasury",
+              type: "address",
+            },
+          ],
+          name: "TreasuryAddressUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "USDCContractUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
               indexed: true,
               internalType: "address",
               name: "implementation",
@@ -1047,11 +1123,6 @@ const deployedContracts = {
               type: "string",
             },
             {
-              internalType: "string",
-              name: "baseURI",
-              type: "string",
-            },
-            {
               internalType: "uint256",
               name: "initialMintFee",
               type: "uint256",
@@ -1059,6 +1130,16 @@ const deployedContracts = {
             {
               internalType: "address",
               name: "initialOwner",
+              type: "address",
+            },
+            {
+              internalType: "address payable",
+              name: "initialTreasury",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "_usdcAddress",
               type: "address",
             },
           ],
@@ -1112,7 +1193,7 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          stateMutability: "payable",
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -1136,6 +1217,19 @@ const deployedContracts = {
               internalType: "string",
               name: "",
               type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "nextTokenId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -1294,12 +1388,12 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "newBaseURI",
-              type: "string",
+              internalType: "uint256",
+              name: "newFee",
+              type: "uint256",
             },
           ],
-          name: "setBaseURI",
+          name: "setMintFee",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -1307,12 +1401,25 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "newFee",
-              type: "uint256",
+              internalType: "address payable",
+              name: "newTreasury",
+              type: "address",
             },
           ],
-          name: "setMintFee",
+          name: "setTreasuryAddress",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newUSDCContract",
+              type: "address",
+            },
+          ],
+          name: "setUSDCContract",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -1405,6 +1512,19 @@ const deployedContracts = {
           type: "function",
         },
         {
+          inputs: [],
+          name: "treasuryAddress",
+          outputs: [
+            {
+              internalType: "address payable",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             {
               internalType: "address",
@@ -1437,16 +1557,22 @@ const deployedContracts = {
         },
         {
           inputs: [],
-          name: "withdrawFees",
-          outputs: [],
-          stateMutability: "nonpayable",
+          name: "usdcToken",
+          outputs: [
+            {
+              internalType: "contract IERC20",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
       ],
       inheritedFunctions: {},
     },
-    ZodaNFT_Proxy: {
-      address: "0x1cb538dbC1aFa2433543eb5BC9099A4Ab5e5419f",
+    ZodiacNFT_Proxy: {
+      address: "0x71F6Fcd3326C22a896d1d725be5B9E2060001936",
       abi: [
         {
           inputs: [

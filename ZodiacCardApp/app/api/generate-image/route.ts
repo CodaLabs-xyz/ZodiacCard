@@ -14,8 +14,8 @@ export async function POST(req: Request) {
   try {
     console.log(`[${requestId}] 📝 Parsing request body...`)
     const { prompt } = await req.json()
-    console.log(`[${requestId}] ✅ Request parsed. Prompt length: ${prompt?.length ?? 0}`)
-    console.log(`[${requestId}] 📄 Prompt content: "${prompt}"`)
+    // console.log(`[${requestId}] ✅ Request parsed. Prompt length: ${prompt?.length ?? 0}`)
+    // console.log(`[${requestId}] 📄 Prompt content: "${prompt}"`)
 
     console.log(`[${requestId}] 🎨 Starting image generation...`)
     const startTime = Date.now()
