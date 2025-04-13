@@ -200,7 +200,7 @@ The artwork should maintain a perfect balance between anime aesthetics, zodiac m
   }, [username, sign, zodiacType, signInfo.element])
 
   const handleShare = () => {
-    const text = `My ${zodiacType} zodiac fortune from Zodiac: As a ${sign}, ${fortune} Check yours at https://ZodiacCard.xyz`
+    const text = `My ${zodiacType} zodiac fortune from Zodiac: As a ${sign}, ${fortune} Check yours at ZodiacCard.xyz`
     const url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
     window.open(url, "_blank")
   }
