@@ -1,8 +1,0 @@
-{
-  "base": {
-    "ERC1967Proxy": {
-      "address": "0x71f6fcd3326c22a896d1d725be5b9e2060001936",
-      "startBlock": 28863760
-    }
-  }
-}
