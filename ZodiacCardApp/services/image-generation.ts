@@ -31,7 +31,7 @@ export async function generateImage({
   size = '1024x1024'
 }: GenerateImageOptions): Promise<GenerateImageResponse> {
   log(requestId, '🟢 Image Generation Started')
-  log(requestId, '📄 Prompt content:', prompt)
+  // log(requestId, '📄 Prompt content:', prompt)
 
   try {
     const startTime = Date.now()
