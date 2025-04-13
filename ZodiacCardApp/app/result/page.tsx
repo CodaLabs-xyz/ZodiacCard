@@ -108,8 +108,8 @@ Both figures are surrounded by a mesmerizing cosmic backdrop featuring swirling 
 
 The artwork should maintain a perfect balance between anime aesthetics, zodiac mysticism, and blockchain symbolism, creating a captivating and meaningful representation of ${sign}'s spiritual energy in the digital age.`
 
-        console.log('🎨 Initiating image generation request with prompt length:', prompt.length)
-        console.log('📄 Prompt:', prompt)
+        // console.log('🎨 Initiating image generation request with prompt length:', prompt.length)
+        // console.log('📄 Prompt:', prompt)
         
         const imageResponse = await fetch(process.env.NEXT_PUBLIC_IMAGE_GENERATION_URL || "", {
           method: "POST",
@@ -117,8 +117,8 @@ The artwork should maintain a perfect balance between anime aesthetics, zodiac m
           body: JSON.stringify({ prompt }),
         })
 
-        console.log('📡 Image generation response status:', imageResponse.status)
-        console.log('📡 Response headers:', Object.fromEntries(imageResponse.headers.entries()))
+        // console.log('📡 Image generation response status:', imageResponse.status)
+        // console.log('📡 Response headers:', Object.fromEntries(imageResponse.headers.entries()))
 
         if (!imageResponse.ok) {
           const errorText = await imageResponse.text()
