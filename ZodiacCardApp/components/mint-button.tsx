@@ -291,7 +291,7 @@ export function MintButton({
     if(imageIpfsUrl) {
       //warpcastUrl +=  `&embeds[]=${encodeURIComponent(imageIpfsUrl)}`
       const gatewayUrl = `https://ipfs.io/ipfs/${imageIpfsUrl.replace('ipfs://', '')}`
-      warpcastUrl += `&embeds[]=${encodeURIComponent(gatewayUrl)}`
+      warpcastUrl += `&embeds[]=${encodeURIComponent(gatewayUrl)}&embeds[]=${encodeURIComponent('https://zodiaccard.xyz')}`
     }
     window.open(warpcastUrl, '_blank')
   }

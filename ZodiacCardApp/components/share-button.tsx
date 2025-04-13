@@ -25,7 +25,7 @@ export function ShareButton({ username, sign, fortune, imageUrl, className }: Sh
     // Create the Warpcast URL
     let url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
     if (imageUrl) {
-      url += `&embeds[]=${encodeURIComponent(imageUrl)}`
+      url += `&embeds[]=${encodeURIComponent(imageUrl)}&embeds[]=${encodeURIComponent('https://zodiaccard.xyz')}`
     }
 
     window.open(url, "_blank")
