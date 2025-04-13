@@ -28,14 +28,14 @@ const chainConfig = {
     ...base,
     rpcUrls: {
       ...base.rpcUrls,
-      default: { http: ['https://mainnet.base.org'] },
+      default: { http: [process.env.NEXT_PUBLIC_RPC_URL_BASE || ''] },
     }
   },
   [baseSepolia.id]: {
     ...baseSepolia,
     rpcUrls: {
       ...baseSepolia.rpcUrls,
-      default: { http: ['https://sepolia.base.org'] },
+      default: { http: [process.env.NEXT_PUBLIC_RPC_URL_BASE_SEPOLIA || ''] },
     }
   }
 }
