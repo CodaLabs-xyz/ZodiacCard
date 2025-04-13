@@ -106,14 +106,13 @@ export function MintButton({
   const chainId = useChainId()
   const { switchChain, isPending: isSwitchPending } = useSwitchChain()
   const publicClient = usePublicClient()
-  const [isMinting, setIsMinting] = useState(false)
-  const [isApproving, setIsApproving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [tokenId, setTokenId] = useState<string | null>(null)
   const [isMinted, setIsMinted] = useState(false)
   const [imageIpfsUrl, setImageIpfsUrl] = useState<string | null>(null)
   const [isWrongNetwork, setIsWrongNetwork] = useState(false)
+  const [mintStep, setMintStep] = useState<'initial' | 'approving' | 'uploading' | 'minting'>('initial')
 
   // Check if we're on the wrong network
   useEffect(() => {
@@ -150,21 +149,19 @@ export function MintButton({
     }
   }
 
-  const handleMint = async () => {
+  const handleApproveAndMint = async () => {
     try {
       setError(null)
-      setIsMinting(true)
+      setMintStep('initial')
 
       if (!publicClient || !address) {
         setError('Wallet not connected')
-        setIsMinting(false)
         return
       }
 
       // Check chain ID first
       if (chainId !== TARGET_CHAIN_ID) {
         setError(`Please switch to ${NETWORK_NAME} to mint`)
-        setIsMinting(false)
         try {
           await switchChain({ chainId: TARGET_CHAIN_ID })
         } catch (error) {
@@ -174,12 +171,10 @@ export function MintButton({
         return
       }
 
-      // Check USDC allowance
+      // Check USDC allowance and approve if needed
       const currentAllowance = usdcAllowance ?? BigInt("0")
       if (currentAllowance < MINT_FEE) {
-        // console.log('Approving USDC spending:', formatUSDC(MINT_FEE))
-        setIsApproving(true)
-
+        setMintStep('approving')
         try {
           const approvalHash = await writeContract({
             address: USDC_CONTRACT_ADDRESS,
@@ -187,25 +182,34 @@ export function MintButton({
             functionName: 'approve',
             args: [CONTRACT_ADDRESS, MINT_FEE],
           })
-
-          // Wait for approval transaction
           await publicClient.waitForTransactionReceipt({ hash: approvalHash })
         } catch (error) {
           console.error('USDC approval error:', error)
-          setError('Failed to approve USDC spending')
-          setIsApproving(false)
-          setIsMinting(false)
+          if (error instanceof Error) {
+            if (error.message.includes('user rejected')) {
+              setError('USDC approval was rejected. Please try again.')
+            } else if (error.message.includes('insufficient funds')) {
+              setError('Insufficient USDC balance for approval.')
+            } else {
+              setError(`Failed to approve USDC: ${error.message}`)
+            }
+          } else {
+            setError('Failed to approve USDC spending')
+          }
+          setMintStep('initial')
           return
         }
-        setIsApproving(false)
       }
 
-      // Upload image to IPFS
+      // Upload to IPFS
+      setMintStep('uploading')
       const { ipfsUrl: imageIpfsUrlUploaded } = await uploadToIPFS(imageUrl)
-      if (!imageIpfsUrlUploaded) throw new Error('Failed to upload image to IPFS')
+      if (!imageIpfsUrlUploaded) {
+        setError('Failed to upload image to IPFS')
+        setMintStep('initial')
+        return
+      }
       setImageIpfsUrl(imageIpfsUrlUploaded)
-
-      // Create metadata
 
       const metadata = {
         name: `Zodiac Card Fortune #${Date.now()}`,
@@ -220,76 +224,93 @@ export function MintButton({
         ]
       }
 
-      // Upload metadata to IPFS
       const { ipfsUrl: metadataIpfsUrl } = await uploadToIPFS(JSON.stringify(metadata), true)
-      if (!metadataIpfsUrl) throw new Error('Failed to upload metadata to IPFS')
-
-      // Mint NFT - the contract will handle the USDC transfer
-      // console.log('Minting NFT with metadata:', metadataIpfsUrl)
-      const mintHash = await writeContract({
-        address: CONTRACT_ADDRESS,
-        abi: zodiacNftAbi,
-        functionName: 'mint',
-        args: [address, metadataIpfsUrl],
-      })
-
-      // Wait for mint transaction and get token ID
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: mintHash })
-      const mintEvent = receipt.logs.find(log => {
-        try {
-          const event = decodeEventLog({
-            abi: zodiacNftAbi,
-            data: log.data,
-            topics: log.topics,
-          })
-          return event.eventName === 'NFTMinted'
-        } catch {
-          return false
-        }
-      })
-
-      if (mintEvent) {
-        const { args } = decodeEventLog({
-          abi: zodiacNftAbi,
-          data: mintEvent.data,
-          topics: mintEvent.topics,
-        }) as { args: { tokenId: bigint } }
-        
-        const newTokenId = args.tokenId.toString()
-        setTokenId(newTokenId)
-        setIsMinted(true)
-        onSuccess?.(newTokenId)
+      if (!metadataIpfsUrl) {
+        setError('Failed to upload metadata to IPFS')
+        setMintStep('initial')
+        return
       }
 
-      setIsMinting(false)
-      setIsDialogOpen(true)
+      // Mint NFT
+      setMintStep('minting')
+      try {
+        const mintHash = await writeContract({
+          address: CONTRACT_ADDRESS,
+          abi: zodiacNftAbi,
+          functionName: 'mint',
+          args: [address, metadataIpfsUrl],
+        })
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash: mintHash })
+        const mintEvent = receipt.logs.find(log => {
+          try {
+            const event = decodeEventLog({
+              abi: zodiacNftAbi,
+              data: log.data,
+              topics: log.topics,
+            })
+            return event.eventName === 'NFTMinted'
+          } catch {
+            return false
+          }
+        })
+
+        if (mintEvent) {
+          const { args } = decodeEventLog({
+            abi: zodiacNftAbi,
+            data: mintEvent.data,
+            topics: mintEvent.topics,
+          }) as { args: { tokenId: bigint } }
+          
+          const newTokenId = args.tokenId.toString()
+          setTokenId(newTokenId)
+          setIsMinted(true)
+          onSuccess?.(newTokenId)
+        } else {
+          throw new Error('Mint transaction succeeded but no NFTMinted event found')
+        }
+
+        setMintStep('initial')
+        setIsDialogOpen(true)
+
+      } catch (err) {
+        console.error('Mint error:', err)
+        const error = err as Error
+        const message = error.message.toLowerCase()
+        
+        if (message.includes('user rejected')) {
+          setError('Transaction was rejected. Please try again.')
+        } else if (message.includes('insufficient funds')) {
+          setError('Insufficient USDC balance to mint.')
+        } else if (message.includes('gas required exceeds allowance')) {
+          setError('Transaction requires more gas than allowed. Please try again.')
+        } else if (message.includes('nonce too low')) {
+          setError('Transaction failed due to nonce mismatch. Please try again.')
+        } else if (message.includes('timeout')) {
+          setError('Transaction timed out. Please check your wallet for the status.')
+        } else if (message.includes('network error') || message.includes('connection refused')) {
+          setError('Network connection error. Please check your connection and try again.')
+        } else {
+          setError(error.message || 'Failed to mint NFT')
+        }
+        setMintStep('initial')
+      }
 
     } catch (err) {
-      console.error('Mint error:', err)
-      const error = err as BaseError
-      setError(error.shortMessage || 'Failed to mint NFT')
-      setIsMinting(false)
+      console.error('Unexpected error:', err)
+      setError('An unexpected error occurred. Please try again.')
+      setMintStep('initial')
     }
   }
 
   const handleShareWarpcast = async () => {
     if (!tokenId) return
     
-    // console.log(zodiacSign)
-    // console.log(tokenId)
-    // console.log(imageUrl)
-    // console.log(zodiacType)
-    // console.log(username)
-    // console.log(fortune)
-    // console.log(imageIpfsUrl)
-    // console.log("--------------------------------")
-
     const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨:\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}\n${fortune}\n\nCheck in OpenSea: ${OPENSEA_URL}/${tokenId}`
     
     let warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
 
     if(imageIpfsUrl) {
-      //warpcastUrl +=  `&embeds[]=${encodeURIComponent(imageIpfsUrl)}`
       const gatewayUrl = `https://ipfs.io/ipfs/${imageIpfsUrl.replace('ipfs://', '')}`
       warpcastUrl += `&embeds[]=${imageUrl}&embeds[]=${encodeURIComponent('https://zodiaccard.xyz')}`
     }
@@ -299,9 +320,10 @@ export function MintButton({
     window.open(warpcastUrl, '_blank')
   }
 
-  return (
-    <div className="flex flex-col gap-4 w-full">
-      {isWrongNetwork ? (
+  // Render button based on current state
+  const renderButton = () => {
+    if (isWrongNetwork) {
+      return (
         <Button
           onClick={handleSwitchNetwork}
           disabled={isSwitchPending}
@@ -319,42 +341,62 @@ export function MintButton({
             </>
           )}
         </Button>
-      ) : (
-        <Button
-          onClick={handleMint}
-          disabled={isMinting || isApproving || !address || isMinted}
-          className="w-full"
-          variant={isMinted ? "secondary" : "default"}
-        >
-          {isApproving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Approving USDC...
-            </>
-          ) : isMinting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Minting...
-            </>
-          ) : !address ? (
-            <>
-              <Wallet className="mr-2 h-4 w-4" />
-              Connect Wallet
-            </>
-          ) : isMinted ? (
-            <>
-              <Sparkles className="mr-2 h-4 w-4" />
-              NFT Minted
-            </>
-          ) : (
-            <>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Mint NFT • {formatUSDC(MINT_FEE)}
-            </>
-          )}
-        </Button>
-      )}
+      )
+    }
 
+    if (!address) {
+      return (
+        <Button onClick={handleApproveAndMint} disabled={true} className="w-full">
+          <Wallet className="mr-2 h-4 w-4" />
+          Connect Wallet
+        </Button>
+      )
+    }
+
+    if (isMinted) {
+      return (
+        <Button disabled className="w-full" variant="secondary">
+          <Sparkles className="mr-2 h-4 w-4" />
+          NFT Minted
+        </Button>
+      )
+    }
+
+    return (
+      <Button
+        onClick={handleApproveAndMint}
+        disabled={mintStep !== 'initial'}
+        className="w-full"
+      >
+        {mintStep === 'approving' ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Approving USDC...
+          </>
+        ) : mintStep === 'uploading' ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Uploading to IPFS...
+          </>
+        ) : mintStep === 'minting' ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Minting NFT...
+          </>
+        ) : (
+          <>
+            <Sparkles className="mr-2 h-4 w-4" />
+            Mint NFT • {formatUSDC(MINT_FEE)}
+          </>
+        )}
+      </Button>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-4 w-full">
+      {renderButton()}
+      
       {error && (
         <p className="mt-2 text-sm text-red-500">{error}</p>
       )}
@@ -365,6 +407,7 @@ export function MintButton({
         </p>
       )}
 
+      {/* Success actions */}
       {isMinted && tokenId && (
         <div className="flex gap-2">
           <Button
