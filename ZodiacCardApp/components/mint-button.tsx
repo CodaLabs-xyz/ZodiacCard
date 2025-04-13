@@ -29,8 +29,8 @@ const MINT_FEE = parseUnits(process.env.NEXT_PUBLIC_USDC_MINT_PRICE || "2.99", 6
 
 // Configure OpenSea URL based on network
 const OPENSEA_URL = TARGET_CHAIN_ID === 8453 
-  ? `https://opensea.io/item/base/${CONTRACT_ADDRESS}`
-  : `https://testnets.opensea.io/assets/base_sepolia/${CONTRACT_ADDRESS}`
+  ? `https://opensea.io/item/base/${CONTRACT_ADDRESS.toLowerCase()}`
+  : `https://testnets.opensea.io/assets/base_sepolia/${CONTRACT_ADDRESS.toLowerCase()}`
 
 if (!CONTRACT_ADDRESS || !USDC_CONTRACT_ADDRESS) {
   throw new Error('Contract addresses not set in environment variables')
@@ -284,8 +284,7 @@ export function MintButton({
     // console.log(imageIpfsUrl)
     // console.log("--------------------------------")
 
-    const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨:\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}\n${fortune}\n\nCheck yours at www.ZodiacCard.xyz`
-    const url = `${OPENSEA_URL}/${tokenId}`
+    const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨:\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}\n${fortune}\n\nCheck yours at ZodiacCard.xyz`
     
     let warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
 
