@@ -48,17 +48,14 @@ export const config = createConfig({
   transports,
   connectors: [
     miniAppConnector(),
-    injected({
-      shimDisconnect: true,
-    }),
     walletConnect({
       projectId,
       showQrModal: true,
       metadata: {
         name: 'Zodiac Card',
         description: 'Mint your personalized Zodiac Card NFT',
-        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://codalabs.ngrok.io',
-        icons: [process.env.NEXT_PUBLIC_IMAGE_URL || 'https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacCardBanner02.png'],
+        url: process.env.NEXT_PUBLIC_SITE_URL || '',
+        icons: [process.env.NEXT_PUBLIC_IMAGE_URL || ''],
       },
     }),
   ]
