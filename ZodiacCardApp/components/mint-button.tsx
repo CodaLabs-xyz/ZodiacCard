@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Loader2, Sparkles, Wallet, Share2 } from "lucide-react"
+import { Loader2, Sparkles, Wallet, Share2, SwitchCamera } from "lucide-react"
 import Image from "next/image"
 import { parseUnits, formatUnits, decodeEventLog, type Log } from "viem"
 import { zodiacNftAbi } from "@/lib/abis"
@@ -104,7 +104,7 @@ export function MintButton({
 }: MintButtonProps) {
   const { address } = useAccount()
   const chainId = useChainId()
-  const { switchChain } = useSwitchChain()
+  const { switchChain, isPending: isSwitchPending } = useSwitchChain()
   const publicClient = usePublicClient()
   const [isMinting, setIsMinting] = useState(false)
   const [isApproving, setIsApproving] = useState(false)
@@ -113,6 +113,18 @@ export function MintButton({
   const [tokenId, setTokenId] = useState<string | null>(null)
   const [isMinted, setIsMinted] = useState(false)
   const [imageIpfsUrl, setImageIpfsUrl] = useState<string | null>(null)
+  const [isWrongNetwork, setIsWrongNetwork] = useState(false)
+
+  // Check if we're on the wrong network
+  useEffect(() => {
+    if (chainId && chainId !== TARGET_CHAIN_ID) {
+      setIsWrongNetwork(true)
+      setError(`Please switch to ${NETWORK_NAME} to mint`)
+    } else {
+      setIsWrongNetwork(false)
+      setError(null)
+    }
+  }, [chainId])
 
   // Check USDC allowance
   const { data: usdcAllowance } = useContractRead({
@@ -121,12 +133,22 @@ export function MintButton({
     functionName: 'allowance',
     args: [address!, CONTRACT_ADDRESS],
     query: {
-      enabled: !!address,
+      enabled: !!address && !isWrongNetwork,
       select: (data: unknown) => BigInt(data?.toString() || "0")
     }
   })
 
   const { writeContract } = useContractInteraction()
+
+  const handleSwitchNetwork = async () => {
+    try {
+      setError(null)
+      await switchChain({ chainId: TARGET_CHAIN_ID })
+    } catch (error) {
+      console.error('Failed to switch network:', error)
+      setError(`Failed to switch to ${NETWORK_NAME}. Please try manually.`)
+    }
+  }
 
   const handleMint = async () => {
     try {
@@ -139,9 +161,16 @@ export function MintButton({
         return
       }
 
-      // Check chain ID
+      // Check chain ID first
       if (chainId !== TARGET_CHAIN_ID) {
-        await switchChain({ chainId: TARGET_CHAIN_ID })
+        setError(`Please switch to ${NETWORK_NAME} to mint`)
+        setIsMinting(false)
+        try {
+          await switchChain({ chainId: TARGET_CHAIN_ID })
+        } catch (error) {
+          console.error('Failed to switch network:', error)
+          setError(`Failed to switch to ${NETWORK_NAME}. Please switch manually.`)
+        }
         return
       }
 
@@ -270,39 +299,59 @@ export function MintButton({
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <Button
-        onClick={handleMint}
-        disabled={isMinting || isApproving || !address || isMinted}
-        className="w-full"
-        variant={isMinted ? "secondary" : "default"}
-      >
-        {isApproving ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Approving USDC...
-          </>
-        ) : isMinting ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Minting...
-          </>
-        ) : !address ? (
-          <>
-            <Wallet className="mr-2 h-4 w-4" />
-            Connect Wallet
-          </>
-        ) : isMinted ? (
-          <>
-            <Sparkles className="mr-2 h-4 w-4" />
-            NFT Minted
-          </>
-        ) : (
-          <>
-            <Sparkles className="mr-2 h-4 w-4" />
-            Mint NFT • {formatUSDC(MINT_FEE)}
-          </>
-        )}
-      </Button>
+      {isWrongNetwork ? (
+        <Button
+          onClick={handleSwitchNetwork}
+          disabled={isSwitchPending}
+          className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+        >
+          {isSwitchPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Switching Network...
+            </>
+          ) : (
+            <>
+              <SwitchCamera className="mr-2 h-4 w-4" />
+              Switch to {NETWORK_NAME}
+            </>
+          )}
+        </Button>
+      ) : (
+        <Button
+          onClick={handleMint}
+          disabled={isMinting || isApproving || !address || isMinted}
+          className="w-full"
+          variant={isMinted ? "secondary" : "default"}
+        >
+          {isApproving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Approving USDC...
+            </>
+          ) : isMinting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Minting...
+            </>
+          ) : !address ? (
+            <>
+              <Wallet className="mr-2 h-4 w-4" />
+              Connect Wallet
+            </>
+          ) : isMinted ? (
+            <>
+              <Sparkles className="mr-2 h-4 w-4" />
+              NFT Minted
+            </>
+          ) : (
+            <>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Mint NFT • {formatUSDC(MINT_FEE)}
+            </>
+          )}
+        </Button>
+      )}
 
       {error && (
         <p className="mt-2 text-sm text-red-500">{error}</p>

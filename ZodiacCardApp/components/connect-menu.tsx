@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useChainId, useSwitchChain } from 'wagmi'
 import { Button } from "@/components/ui/button"
-import { Wallet, LogOut, ChevronDown } from "lucide-react"
+import { Wallet, LogOut, ChevronDown, SwitchCamera } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { truncateEthAddress } from "@/lib/utils"
 import { sdk } from "@farcaster/frame-sdk"
@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { base, baseSepolia } from 'wagmi/chains'
 
 export function ConnectMenu() {
   const [mounted, setMounted] = useState(false)
@@ -20,6 +21,15 @@ export function ConnectMenu() {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const [isFarcaster, setIsFarcaster] = useState(false)
+  const chainId = useChainId()
+  const { switchChain, isPending: isSwitchPending } = useSwitchChain()
+  const [isWrongNetwork, setIsWrongNetwork] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Get target chain from env
+  const TARGET_CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || "84532")
+  const targetChain = TARGET_CHAIN_ID === 8453 ? base : baseSepolia
+  const NETWORK_NAME = targetChain.name
 
   useEffect(() => {
     const checkFarcasterContext = async () => {
@@ -36,6 +46,33 @@ export function ConnectMenu() {
     setMounted(true)
   }, [])
 
+  // Check if we're on the wrong network
+  useEffect(() => {
+    if (isConnected) {
+      const wrongNetwork = chainId !== TARGET_CHAIN_ID
+      setIsWrongNetwork(wrongNetwork)
+      if (wrongNetwork) {
+        setError(`Please switch to ${NETWORK_NAME}`)
+      } else {
+        setError(null)
+      }
+    } else {
+      setIsWrongNetwork(false)
+      setError(null)
+    }
+  }, [chainId, isConnected, TARGET_CHAIN_ID, NETWORK_NAME])
+
+  // Handle network switch
+  const handleSwitchNetwork = async () => {
+    try {
+      setError(null)
+      await switchChain({ chainId: TARGET_CHAIN_ID })
+    } catch (error) {
+      console.error('Failed to switch network:', error)
+      setError(`Failed to switch to ${NETWORK_NAME}. Please try manually.`)
+    }
+  }
+
   // Don't render anything on the server
   if (!mounted) {
     return (
@@ -51,65 +88,118 @@ export function ConnectMenu() {
 
   if (isConnected) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="outline" 
-            className="bg-violet-600/10 text-violet-600 hover:bg-violet-600/20 hover:text-violet-700"
-          >
-            <Wallet className="mr-2 h-4 w-4" />
-            {truncateEthAddress(address)}
-            <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[200px]">
-          <DropdownMenuItem
-            className="text-red-500 focus:text-red-500 cursor-pointer"
-            onClick={() => disconnect()}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Disconnect
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex flex-col items-end gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant={isWrongNetwork ? "destructive" : "outline"}
+              className={cn(
+                isWrongNetwork ? "animate-pulse" : "bg-violet-600/10 text-violet-600 hover:bg-violet-600/20 hover:text-violet-700",
+                "min-w-[160px] justify-between"
+              )}
+            >
+              <div className="flex items-center">
+                <Wallet className="mr-2 h-4 w-4" />
+                {isWrongNetwork ? (
+                  <>Wrong Network</>
+                ) : (
+                  address ? truncateEthAddress(address) : 'Connected'
+                )}
+              </div>
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[200px]">
+            {isWrongNetwork && (
+              <DropdownMenuItem
+                className="text-violet-600 focus:text-violet-700 cursor-pointer"
+                onClick={handleSwitchNetwork}
+                disabled={isSwitchPending}
+              >
+                <SwitchCamera className={cn("mr-2 h-4 w-4", isSwitchPending && "animate-spin")} />
+                {isSwitchPending ? 'Switching...' : `Switch to ${NETWORK_NAME}`}
+              </DropdownMenuItem>
+            )}
+            {/* // add the network name */}
+            <DropdownMenuItem
+              className="text-violet-600 focus:text-violet-700 cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(NETWORK_NAME)
+              }}
+            >
+              {NETWORK_NAME}
+            </DropdownMenuItem>
+            {/* // show the network name from the user wallet */}
+            <DropdownMenuItem
+              className="text-violet-600 focus:text-violet-700 cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(chainId.toString())
+              }}
+            >
+              {chainId}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-500 focus:text-red-500 cursor-pointer"
+              onClick={() => disconnect()}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Disconnect
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {error && (
+          <p className="text-sm text-red-500 animate-fade-in">
+            {error}
+          </p>
+        )}
+      </div>
     )
   }
 
   const handleConnect = async () => {
     try {
+      setError(null)
+      
       if (isFarcaster) {
-        // In Farcaster context, use the Farcaster connector
-        await connect({ connector: connectors.find(c => c.id === 'farcasterFrame') })
+        const farcasterConnector = connectors.find(c => c.id === 'farcasterFrame')
+        if (!farcasterConnector) throw new Error('Farcaster connector not found')
+        await connect({ connector: farcasterConnector })
       } else {
-        // In browser context, prefer injected connector (MetaMask etc) if available
         const injectedConnector = connectors.find(c => c.id === 'injected')
         const walletConnectConnector = connectors.find(c => c.id === 'walletConnect')
         
-        // Try injected first, fall back to WalletConnect
         if (injectedConnector && window.ethereum) {
           await connect({ connector: injectedConnector })
         } else if (walletConnectConnector) {
           await connect({ connector: walletConnectConnector })
         } else {
-          console.error('No suitable wallet connector found')
+          throw new Error('No suitable wallet connector found')
         }
       }
     } catch (error) {
       console.error('Failed to connect wallet:', error)
+      setError('Failed to connect wallet. Please try again.')
     }
   }
 
   return (
-    <Button
-      onClick={handleConnect}
-      className={cn(
-        "bg-violet-600 hover:bg-violet-700",
-        "text-white",
-        "flex items-center gap-2"
+    <div className="flex flex-col items-end gap-2">
+      <Button
+        onClick={handleConnect}
+        className={cn(
+          "bg-violet-600 hover:bg-violet-700",
+          "text-white",
+          "flex items-center gap-2"
+        )}
+      >
+        <Wallet className="h-4 w-4" />
+        Connect Wallet
+      </Button>
+      {error && (
+        <p className="text-sm text-red-500 animate-fade-in">
+          {error}
+        </p>
       )}
-    >
-      <Wallet className="h-4 w-4" />
-      Connect Wallet
-    </Button>
+    </div>
   )
 } 
