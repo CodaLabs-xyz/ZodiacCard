@@ -1,8 +1,8 @@
 {
     "accountAssociation": {
-      "header": "eyJmaWQiOjY1MTMxOSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGRiNTFkNzIwNTRiODM3MjBmMThlMTIwZWY3NTIwMGIxMmQyZTkzY2MifQ",
-      "payload": "eyJkb21haW4iOiJ6b2RpYWNjYXJkLnh5eiJ9",
-      "signature": ""
+    "header": "eyJmaWQiOjIxMDY3MSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDAxMUM1RjM3N2M2OTY4ZjhDOGNGODZmY0Y3OEYxMUFhOTgyMmJFOEYifQ",
+    "payload": "eyJkb21haW4iOiJ6b2RpYWNjYXJkLnh5eiJ9",
+    "signature": "MHhiMzM0YTM5OGQ1MjdjOGEyMTQzYzllODAxYTc4NDNiMWNlM2E1NjMwMjE0YzEwMDI0YzllODJkY2RmN2NkZGNhMTI3MTcyNzdlNmI4NTJkY2ZiYzZjYmRlZjM2NWUyYmU4MzkzYzQ0YzBlOTQzNmQ5ZTEzNzE2YjAwODgyMDg3YjFi"
     },
     "frame": {
       "name": "Zodiac Cards",
