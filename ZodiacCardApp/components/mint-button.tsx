@@ -17,6 +17,7 @@ import Image from "next/image"
 import { parseUnits, formatUnits, decodeEventLog, type Log } from "viem"
 import { zodiacNftAbi } from "@/lib/abis"
 import { type BaseError, ContractFunctionExecutionError } from 'viem'
+import { sdk } from "@farcaster/frame-sdk"
 
 // Get chain configuration from environment variables
 const TARGET_CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || "84532")
@@ -307,18 +308,20 @@ export function MintButton({
     if (!tokenId) return
     
     const text = `Just minted my Zodiac Card NFT! Check out my fortune ✨:\n\nZodiac: ${zodiacType.toUpperCase()}\nSign: ${zodiacSign}\n${fortune}\n\nCheck in OpenSea: ${OPENSEA_URL}/${tokenId}`
-    
-    let warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
+    // let warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`
+    // if(imageIpfsUrl) {
+    //   const gatewayUrl = `https://ipfs.io/ipfs/${imageIpfsUrl.replace('ipfs://', '')}`
+    //   //warpcastUrl += `&embeds[]=${imageUrl}&embeds[]=${encodeURIComponent('https://zodiaccard.xyz')}`
+    // }
+    //console.log(warpcastUrl)
+    //window.open(warpcastUrl, '_blank')
 
-    if(imageIpfsUrl) {
-      const gatewayUrl = `https://ipfs.io/ipfs/${imageIpfsUrl.replace('ipfs://', '')}`
-      warpcastUrl += `&embeds[]=${imageUrl}&embeds[]=${encodeURIComponent('https://zodiaccard.xyz')}`
-    }
-
-    console.log(warpcastUrl)
-
-    window.open(warpcastUrl, '_blank')
+    await sdk.actions.composeCast({ 
+      text,
+      embeds: [imageUrl,"https://zodiaccard.xyz"],
+    })    
   }
+     
 
   // Render button based on current state
   const renderButton = () => {
@@ -411,7 +414,11 @@ export function MintButton({
       {isMinted && tokenId && (
         <div className="flex gap-2">
           <Button
-            onClick={() => window.open(`${OPENSEA_URL}/${tokenId}`, '_blank')}
+            onClick={async () => {
+              // window.open(`${OPENSEA_URL}/${tokenId}`, '_blank')
+              // handleShareWarpcast()
+              await sdk.actions.openUrl(`${OPENSEA_URL}/${tokenId}`)
+            }}
             variant="outline"
             className="flex-1"
           >
@@ -436,7 +443,7 @@ export function MintButton({
               height={20}
               className="mr-2"
             />
-            Share on Warpcast
+            Share
           </Button>
         </div>
       )}
@@ -460,7 +467,10 @@ export function MintButton({
           </div>
           <DialogFooter className="flex gap-2">
             <Button
-              onClick={() => window.open(`${OPENSEA_URL}/${tokenId}`, '_blank')}
+              onClick={async () => {
+                // window.open(`${OPENSEA_URL}/${tokenId}`, '_blank')
+                await sdk.actions.openUrl(`${OPENSEA_URL}/${tokenId}`)
+              }}
               variant="outline"
             >
               <Image
@@ -483,7 +493,7 @@ export function MintButton({
                 height={20}
                 className="mr-2"
               />
-              Share on Warpcast
+              Share
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -31,10 +31,24 @@ export async function generateImage({
   size = '1024x1024'
 }: GenerateImageOptions): Promise<GenerateImageResponse> {
   log(requestId, '🟢 Image Generation Started')
-  // log(requestId, '📄 Prompt content:', prompt)
 
   try {
     const startTime = Date.now()
+    
+    // Check content moderation first
+    log(requestId, '🔍 Checking content moderation...')
+    const moderation = await openai.moderations.create({
+      input: prompt,
+    })
+    
+    const flagged = moderation.results[0].flagged
+    
+    if (flagged) {
+      log(requestId, '⚠️ Prompt flagged by moderation API')
+      throw new Error('Prompt contains inappropriate content and was flagged by moderation API.')
+    }
+    
+    log(requestId, '✅ Content moderation passed')
     log(requestId, '🎨 Starting OpenAI image generation...')
 
     const response = await openai.images.generate({

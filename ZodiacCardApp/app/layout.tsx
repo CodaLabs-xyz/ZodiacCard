@@ -18,7 +18,7 @@ const frameMetadata = {
     action: {
       type: "launch_frame",
       name: "Zodiac Card",
-      url: "https://zodiaccard.xyz",
+      url: process.env.NEXT_PUBLIC_SITE_URL,
       splashImageUrl: "https://codalabs-public-assets.s3.us-east-1.amazonaws.com/ZodiacImages/ZodiacSplash.png",
       splashBackgroundColor: "#18111f"
     }
