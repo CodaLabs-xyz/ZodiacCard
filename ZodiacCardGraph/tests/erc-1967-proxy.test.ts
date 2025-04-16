@@ -5,7 +5,7 @@ import {
   clearStore,
   beforeAll,
   afterAll
-} from "matchstick-as/assembly/index"
+} from "matchstick-as"
 import { Address } from "@graphprotocol/graph-ts"
 import { AdminChanged } from "../generated/schema"
 import { AdminChanged as AdminChangedEvent } from "../generated/ERC1967Proxy/ERC1967Proxy"

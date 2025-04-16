@@ -3,6 +3,9 @@
     "ERC1967Proxy": {
       "address": "0x71F6Fcd3326C22a896d1d725be5B9E2060001936",
       "startBlock": 28863760
+    },
+    "ZodiacNFT": {
+      "address": "0x11A13c5E75f29CE60638099A694Fa4Bc0720a1ce"
     }
   }
 }

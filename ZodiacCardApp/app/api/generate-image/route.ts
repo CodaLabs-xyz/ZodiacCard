@@ -11,11 +11,26 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
   }
 
+  let prompt: string | undefined
+
   try {
     console.log(`[${requestId}] 📝 Parsing request body...`)
-    const { prompt } = await req.json()
-    // console.log(`[${requestId}] ✅ Request parsed. Prompt length: ${prompt?.length ?? 0}`)
-    // console.log(`[${requestId}] 📄 Prompt content: "${prompt}"`)
+    const body = await req.json()
+    prompt = body.prompt
+
+    if (!prompt || typeof prompt !== 'string') {
+      return NextResponse.json(
+        { error: 'Invalid prompt. Must be a non-empty string.' },
+        { status: 400 }
+      )
+    }
+
+    if (prompt.length > 4000) {
+      return NextResponse.json(
+        { error: 'Prompt is too long. Maximum length is 4000 characters.' },
+        { status: 400 }
+      )
+    }
 
     console.log(`[${requestId}] 🎨 Starting image generation...`)
     const startTime = Date.now()
@@ -38,7 +53,7 @@ export async function POST(req: Request) {
       stack: error?.stack,
       type: error?.type,
       status: error?.status,
-      prompt: prompt // Log the prompt in case of error too
+      prompt: prompt // Now prompt is accessible here
     })
     
     return NextResponse.json(
